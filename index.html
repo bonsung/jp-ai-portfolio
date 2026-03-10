@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JP, AI Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #faf8f4; --paper: #fff9f2; --ink: #1a1208; --muted: #7a6f5e;
+    --accent: #b85c2a; --accent-light: #f0e0d0; --border: #e8ddd0; --tag-bg: #f0ebe2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif; font-weight: 300; min-height: 100vh; }
+  header { background: var(--ink); color: var(--bg); padding: 40px 60px 36px; display: flex; align-items: flex-end; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; letter-spacing: -0.02em; line-height: 1; }
+  header h1 span { font-family: 'Noto Sans KR', sans-serif; font-size: 0.75rem; font-weight: 300; display: block; color: #a89880; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+  .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn { border: none; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-size: 0.8rem; transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: white; padding: 10px 22px; font-weight: 500; letter-spacing: 0.05em; }
+  .btn-primary:hover { background: #9e4e24; }
+  .btn-ghost { background: transparent; color: #a89880; border: 1px solid #3a3020; padding: 9px 18px; }
+  .btn-ghost:hover { border-color: #a89880; color: var(--bg); }
+  .btn-ai { background: linear-gradient(135deg, #4a2080, #7b3fc0); color: white; padding: 10px 20px; font-weight: 500; letter-spacing: 0.03em; }
+  .btn-ai:hover { background: linear-gradient(135deg, #3a1860, #6b30a8); }
+  .stats-bar { background: var(--accent-light); border-bottom: 1px solid var(--border); padding: 14px 60px; display: flex; gap: 40px; }
+  .stat { display: flex; align-items: baseline; gap: 8px; }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--accent); }
+  .stat-label { font-size: 0.75rem; color: var(--muted); }
+  .main { display: block; min-height: calc(100vh - 130px); }
+  .content { max-width: 900px; margin: 0 auto; padding: 40px 50px; }
+  .entries-grid { display: grid; gap: 24px; }
+  .entry-card { background: var(--paper); border: 1px solid var(--border); padding: 28px 32px; position: relative; transition: box-shadow 0.2s; cursor: pointer; }
+  .entry-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+  .entry-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); opacity: 0; transition: opacity 0.2s; }
+  .entry-card:hover::before { opacity: 1; }
+  .card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .card-date { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
+  .card-category { font-size: 0.68rem; background: var(--accent-light); color: var(--accent); padding: 2px 10px; font-weight: 500; }
+  .card-title { font-family: 'Noto Serif KR', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
+  .card-body { font-size: 0.87rem; color: var(--muted); line-height: 1.8; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-footer { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .card-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .link-chip { font-size: 0.68rem; background: var(--tag-bg); color: var(--accent); padding: 3px 10px; text-decoration: none; transition: background 0.15s; }
+  .link-chip:hover { background: var(--accent-light); }
+  .card-actions { display: flex; gap: 8px; }
+  .icon-btn { background: none; border: 1px solid var(--border); width: 30px; height: 30px; cursor: pointer; font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .card-image-preview { margin-top: 12px; }
+  .card-image-preview img { max-width: 100%; max-height: 200px; object-fit: cover; border: 1px solid var(--border); }
+  .attachments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .attachments-title { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .attachment-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; background: #eef4ff; color: #3b6ea8; padding: 3px 10px; margin-right: 6px; margin-bottom: 5px; border: 1px solid #c8d8f0; border-radius: 4px; cursor: pointer; text-decoration: none; transition: background 0.15s; }
+  a.attachment-chip:hover { background: #dce9ff; }
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,8,0.6); z-index: 200; align-items: center; justify-content: center; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--paper); width: 680px; max-width: 95vw; max-height: 90vh; overflow-y: auto; padding: 48px; }
+  .modal h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  .form-group { margin-bottom: 22px; }
+  label { display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+  input[type="text"], input[type="date"], input[type="url"], input[type="password"], textarea, select { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 0.88rem; color: var(--ink); font-weight: 300; outline: none; transition: border-color 0.15s; }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.7; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .links-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+  .link-row { display: flex; gap: 8px; align-items: center; }
+  .link-row input { flex: 1; }
+  .link-row input:first-child { max-width: 140px; }
+  .images-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+  .image-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .image-row input { flex: 1; }
+  .image-row input:first-child { max-width: 140px; }
+  .image-preview-thumb { width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--border); display: none; flex-shrink: 0; }
+  .add-link-btn { font-size: 0.78rem; color: var(--accent); background: none; border: 1px dashed var(--accent); padding: 7px 16px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; }
+  .add-link-btn:hover { background: var(--accent-light); }
+  .remove-link-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; }
+  .remove-link-btn:hover { color: var(--accent); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .view-title { font-family: 'Noto Serif KR', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+  .view-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 24px; }
+  .view-body { font-size: 0.9rem; line-height: 1.9; white-space: pre-wrap; border-top: 1px solid var(--border); padding-top: 24px; margin-bottom: 24px; }
+  .view-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .view-images { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; margin-bottom: 16px; }
+  .view-images img { max-width: 100%; max-height: 300px; object-fit: contain; border: 1px solid var(--border); cursor: pointer; }
+  .search-bar { margin-bottom: 28px; position: relative; }
+  .search-bar input { padding-left: 40px; background: var(--paper); }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+  @media (max-width: 700px) {
+    header { padding: 24px 20px; } .stats-bar { padding: 14px 20px; gap: 20px; overflow-x: auto; }
+    .content { padding: 24px 20px; } .modal { padding: 28px 24px; } .form-row { grid-template-columns: 1fr; }
+    .header-actions { gap: 6px; } .btn-ai,.btn-primary,.btn-ghost { font-size: 0.72rem; padding: 8px 12px; }
+  }
+  @media print {
+    header, .header-actions, .stats-bar, .card-actions, .search-bar { display: none !important; }
+    .main { display: block; } .content { padding: 0; } .entry-card { break-inside: avoid; margin-bottom: 20px; }
+  }
+  .loading-overlay { display:none; position:fixed; inset:0; background:rgba(26,18,8,0.55); z-index:999; align-items:center; justify-content:center; flex-direction:column; gap:16px; color:#fff; font-size:0.9rem; }
+  .loading-overlay.show { display:flex; }
+  .spinner { width:36px; height:36px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .toast { position:fixed; bottom:30px; right:30px; background:var(--ink); color:#fff; padding:12px 20px; font-size:0.82rem; z-index:1000; display:none; border-left:3px solid var(--accent); }
+  .toast.show { display:block; }
+  .toast.error { border-left-color:#e53e3e; }
+  /* PIN 모달 */
+  .pin-overlay { display:none; position:fixed; inset:0; background:rgba(26,18,8,0.7); z-index:2000; align-items:center; justify-content:center; }
+  .pin-overlay.show { display:flex; }
+  .pin-box { background:var(--paper); padding:40px 36px; text-align:center; width:320px; border-radius:4px; }
+  .pin-box h3 { font-family:'DM Serif Display',serif; font-size:1.3rem; margin-bottom:8px; }
+  .pin-box p { font-size:0.82rem; color:var(--muted); margin-bottom:24px; }
+  .pin-input { font-size:1.6rem; letter-spacing:0.4em; text-align:center; width:140px; border:2px solid var(--border); padding:10px; background:var(--bg); color:var(--ink); font-family:'Noto Sans KR',sans-serif; }
+  .pin-input:focus { border-color:var(--accent); outline:none; }
+  .pin-error { color:#e53e3e; font-size:0.8rem; margin-top:10px; min-height:18px; }
+  .pin-btn { margin-top:20px; width:100%; }
+  /* AI 포트폴리오 모달 */
+  .pf-overlay { display:none; position:fixed; inset:0; background:rgba(26,18,8,0.75); z-index:300; overflow-y:auto; padding:40px 20px; }
+  .pf-overlay.open { display:block; }
+  .pf-box { background:#fff; width:860px; max-width:98vw; margin:0 auto; padding:52px; position:relative; }
+  .pf-box h2 { font-family:'DM Serif Display',serif; font-size:1.8rem; margin-bottom:6px; color:var(--ink); }
+  .pf-subtitle { font-size:0.78rem; color:var(--muted); margin-bottom:32px; letter-spacing:0.1em; text-transform:uppercase; border-bottom:1px solid var(--border); padding-bottom:20px; }
+  .pf-content { font-size:0.92rem; line-height:2; color:#222; white-space:pre-wrap; border:1px solid var(--border); padding:32px; background:var(--bg); min-height:200px; }
+  .pf-content.generating { color:var(--muted); font-style:italic; }
+  .pf-actions { display:flex; gap:12px; margin-top:20px; justify-content:flex-end; flex-wrap:wrap; }
+  .apikey-box { background:var(--accent-light); border:1px solid var(--border); padding:18px 20px; margin-bottom:24px; }
+  .apikey-box p { font-size:0.8rem; color:var(--muted); margin-bottom:8px; }
+  .apikey-hint { font-size:0.72rem; color:var(--muted); margin-top:6px; }
+  .apikey-hint a { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div id="loadingText">연결 중...</div></div>
+<div class="toast" id="toast"></div>
+
+<!-- PIN 모달 -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-box">
+    <h3>🔐 수정 잠금</h3>
+    <p>PIN 4자리를 입력하세요</p>
+    <input class="pin-input" type="password" id="pinInput" maxlength="4" placeholder="••••"
+      oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+      onkeydown="if(event.key==='Enter')checkPin()">
+    <div class="pin-error" id="pinError"></div>
+    <button class="btn btn-primary pin-btn" onclick="checkPin()">확인</button>
+    <button class="btn btn-ghost pin-btn" style="margin-top:8px" onclick="closePinModal()">취소</button>
+  </div>
+</div>
+
+<!-- AI 포트폴리오 모달 -->
+<div class="pf-overlay" id="pfOverlay">
+  <div class="pf-box">
+    <h2>🤖 AI 포트폴리오 생성</h2>
+    <div class="pf-subtitle">모든 기록을 종합하여 제출용 공식 포트폴리오를 자동 작성합니다</div>
+
+    <div class="apikey-box" id="apikeyBox">
+      <p>Claude API Key를 입력하세요 (한 번 입력하면 브라우저가 기억합니다)</p>
+      <input type="password" id="claudeApiKey" placeholder="sk-ant-api03-...">
+      <div class="apikey-hint">API Key 발급: <a href="https://console.anthropic.com/keys" target="_blank">console.anthropic.com/keys</a></div>
+    </div>
+
+    <div class="form-group">
+      <label>언어</label>
+      <select id="pfLang">
+        <option value="korean">한국어</option>
+        <option value="english">English</option>
+        <option value="both">한국어 + English (이중 언어)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>제출 목적</label>
+      <input type="text" id="pfPurpose" placeholder="예: AI 스타트업 지원, 사내 발표, 개인 기록 정리 등">
+    </div>
+
+    <div id="pfResult" style="display:none;margin-top:28px;">
+      <label style="margin-bottom:12px;display:block;">📄 생성된 포트폴리오</label>
+      <div class="pf-content" id="pfContent"></div>
+      <div class="pf-actions">
+        <button class="btn btn-ghost" onclick="copyPortfolio()">📋 복사</button>
+        <button class="btn btn-ghost" onclick="printPortfolio()">🖨 인쇄 / PDF</button>
+        <button class="btn btn-primary" onclick="generatePortfolio()">🔄 다시 생성</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:28px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:20px;">
+      <button class="btn btn-ghost" onclick="closePf()">닫기</button>
+      <button class="btn btn-ai" onclick="generatePortfolio()">✨ 포트폴리오 생성</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <h1><span>JP, AI Journey</span>AI와 함께 가는 길</h1>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="window.print()">🖨 인쇄</button>
+    <button class="btn btn-ai" onclick="requirePin('portfolio')">🤖 AI 포트폴리오</button>
+    <button class="btn btn-primary" onclick="requirePin('add')">+ 새 기록 추가</button>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num" id="stat-total">0</span><span class="stat-label">총 기록</span></div>
+  <div class="stat"><span class="stat-num" id="stat-days">0</span><span class="stat-label">기록 일수</span></div>
+  <div class="stat"><span class="stat-num" id="stat-links">0</span><span class="stat-label">연결된 링크</span></div>
+  <div class="stat"><span class="stat-num" id="stat-this-month">0</span><span class="stat-label">이번 달</span></div>
+</div>
+
+<div class="main">
+  <div class="content">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="제목, 내용으로 검색..." oninput="renderEntries()">
+    </div>
+    <div class="entries-grid" id="entriesGrid"></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="overlay" id="addOverlay" onclick="closeOnOverlay(event,'addOverlay')">
+  <div class="modal">
+    <h2 id="modalTitle">새 기록 추가</h2>
+    <div class="form-row">
+      <div class="form-group"><label>날짜</label><input type="date" id="fDate"></div>
+      <div class="form-group"><label>카테고리</label>
+        <select id="fCategory">
+          <option value="학습">📚 학습</option>
+          <option value="바이브코딩">💻 바이브코딩</option>
+          <option value="창작물">🎨 창작물</option>
+          <option value="워크플로우">⚙️ 워크플로우</option>
+          <option value="아이디어">💡 아이디어</option>
+          <option value="성과">🏆 성과</option>
+          <option value="기타">📝 기타</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>제목</label><input type="text" id="fTitle" placeholder="오늘 배우거나 만든 것을 간단히..."></div>
+    <div class="form-group"><label>내용</label><textarea id="fBody" placeholder="오늘의 경험, 느낀 점, 배운 내용을 자유롭게 기록하세요."></textarea></div>
+    <div class="form-group">
+      <label>🔗 관련 링크</label>
+      <div class="links-list" id="linksList"></div>
+      <button class="add-link-btn" onclick="addLinkRow()">+ 링크 추가</button>
+    </div>
+    <div class="form-group">
+      <label>🖼 이미지 첨부 (URL)</label>
+      <div class="images-list" id="imagesList"></div>
+      <button class="add-link-btn" onclick="addImageRow()">+ 이미지 URL 추가</button>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;">이미지를 <a href="https://imgur.com" target="_blank" style="color:var(--accent)">imgur.com</a> 등에 업로드 후 URL을 붙여넣으세요.</div>
+    </div>
+    <div class="form-group">
+      <label>📁 파일/창작물 첨부 (URL)</label>
+      <div class="links-list" id="attachmentsList"></div>
+      <button class="add-link-btn" onclick="addAttachmentRow()">+ 파일 링크 추가</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('addOverlay')">취소</button>
+      <button class="btn btn-primary" onclick="saveEntry()">저장하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="overlay" id="viewOverlay" onclick="closeOnOverlay(event,'viewOverlay')">
+  <div class="modal" id="viewModal"></div>
+</div>
+
+<script>
+// ── Supabase ─────────────────────────────────────────────────
+const SUPABASE_URL = 'https://jmjrhpijooswxkvxagwf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptanJocGlqb29zd3hrdnhhZ3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2OTQwMjksImV4cCI6MjA4ODI3MDAyOX0.hbkOWNryZvYvrZhnr39GgozAN_MXJgoaZf5KU-CF-4Y';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── 개인 정보 ────────────────────────────────────────────────
+const PERSONAL_INFO = {
+  nameKo: '박종필',
+  nameEn: 'Park, Jong Pil',
+  phone: '+82 10-5376-4383 / +86 139-1696-1763',
+  email: 'jppark0307@daum.net / pjp0307@gmail.com'
+};
+
+let entries = [];
+let editId = null;
+
+// ── PIN ──────────────────────────────────────────────────────
+const CORRECT_PIN = '0808';
+let pinUnlocked = false;
+let pinCallback = null;
+
+function requirePin(action, id=null) {
+  if (pinUnlocked) { executePinAction(action, id); return; }
+  pinCallback = { action, id };
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinError').textContent = '';
+  document.getElementById('pinOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('pinInput').focus(), 100);
+}
+function checkPin() {
+  const val = document.getElementById('pinInput').value;
+  if (val === CORRECT_PIN) {
+    pinUnlocked = true;
+    document.getElementById('pinOverlay').classList.remove('show');
+    if (pinCallback) { executePinAction(pinCallback.action, pinCallback.id); pinCallback = null; }
+  } else {
+    document.getElementById('pinError').textContent = '❌ PIN이 틀렸습니다.';
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinInput').focus();
+  }
+}
+function closePinModal() {
+  document.getElementById('pinOverlay').classList.remove('show');
+  pinCallback = null;
+}
+function executePinAction(action, id) {
+  if (action === 'add') openAddModal();
+  else if (action === 'edit') openEditModal(id);
+  else if (action === 'delete') deleteEntry(id);
+  else if (action === 'portfolio') openPf();
+}
+
+// ── UI 유틸 ──────────────────────────────────────────────────
+function showLoading(msg='처리 중...') {
+  document.getElementById('loadingText').textContent = msg;
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (isError?' error':'');
+  setTimeout(()=>{ t.className='toast'; }, 3000);
+}
+
+// ── Supabase CRUD ─────────────────────────────────────────────
+async function loadEntries() {
+  const { data, error } = await sb.from('entries').select('*').order('date', { ascending: false });
+  if (error) { showToast('불러오기 실패: ' + error.message, true); return []; }
+  return data || [];
+}
+async function upsertEntry(entry) {
+  const { error } = await sb.from('entries').upsert(entry, { onConflict: 'id' });
+  if (error) showToast('저장 실패: ' + error.message, true);
+}
+async function deleteEntryFromDB(id) {
+  const { error } = await sb.from('entries').delete().eq('id', id);
+  if (error) showToast('삭제 실패: ' + error.message, true);
+}
+async function initDB() {
+  showLoading('연결 중...');
+  entries = await loadEntries();
+  hideLoading();
+  renderAll();
+}
+
+// ── 렌더링 ────────────────────────────────────────────────────
+function renderAll() { renderStats(); renderEntries(); }
+function renderStats() {
+  document.getElementById('stat-total').textContent = entries.length;
+  document.getElementById('stat-days').textContent = new Set(entries.map(e=>e.date)).size;
+  document.getElementById('stat-links').textContent = entries.reduce((s,e)=>s+(e.links||[]).length,0);
+  const now = new Date();
+  document.getElementById('stat-this-month').textContent = entries.filter(e=>{
+    const d=new Date(e.date); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  }).length;
+}
+function renderEntries() {
+  const grid = document.getElementById('entriesGrid');
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let list = entries.slice().sort((a,b)=>b.date.localeCompare(a.date)||b.created.localeCompare(a.created));
+  if (q) list = list.filter(e=>e.title.toLowerCase().includes(q)||e.body.toLowerCase().includes(q));
+  if (!list.length) {
+    grid.innerHTML=`<div style="text-align:center;padding:80px 40px;color:var(--muted)"><div style="font-size:3rem;margin-bottom:16px">📖</div><h3 style="font-family:'Noto Serif KR',serif;font-size:1.2rem;color:var(--ink)">기록이 없습니다</h3></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(e => {
+    const imgs = (e.images||[]).filter(i=>i&&i.url);
+    const atts = (e.attachments||[]).filter(a=>a&&(typeof a==='object'?a.url:a));
+    return `
+    <div class="entry-card" onclick="viewEntry('${e.id}')">
+      <div class="card-meta">
+        <span class="card-date">${formatDate(e.date)}</span>
+        <span class="card-category">${e.category}</span>
+      </div>
+      <div class="card-title">${e.title}</div>
+      ${imgs.length?`<div class="card-image-preview"><img src="${imgs[0].url}" alt="${imgs[0].label||'이미지'}" onerror="this.style.display='none'"></div>`:''}
+      <div class="card-body">${e.body}</div>
+      <div class="card-footer">
+        <div class="card-links">
+          ${(e.links||[]).slice(0,3).map(l=>`<a class="link-chip" href="${l.url}" target="_blank" onclick="event.stopPropagation()">🔗 ${l.label||'링크'}</a>`).join('')}
+          ${(e.links||[]).length>3?`<span class="link-chip">+${(e.links||[]).length-3}개</span>`:''}
+          ${imgs.length?`<span class="link-chip">🖼 이미지 ${imgs.length}</span>`:''}
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn" title="수정" onclick="event.stopPropagation();requirePin('edit','${e.id}')">✏️</button>
+          <button class="icon-btn" title="삭제" onclick="event.stopPropagation();requirePin('delete','${e.id}')">🗑</button>
+        </div>
+      </div>
+      ${atts.length?`<div class="attachments-section"><div class="attachments-title">📎 파일 첨부</div>${atts.map(a=>typeof a==='object'?`<a class="attachment-chip" href="${a.url}" target="_blank" onclick="event.stopPropagation()">🔗 ${a.label||'파일'}</a>`:`<span class="attachment-chip">📄 ${a}</span>`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function formatDate(d) {
+  return new Date(d+'T00:00:00').toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+}
+
+// ── 추가/수정 모달 ────────────────────────────────────────────
+function openAddModal() {
+  editId=null;
+  document.getElementById('modalTitle').textContent='새 기록 추가';
+  document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fTitle').value='';
+  document.getElementById('fBody').value='';
+  document.getElementById('fCategory').value='학습';
+  document.getElementById('linksList').innerHTML='';
+  document.getElementById('imagesList').innerHTML='';
+  document.getElementById('attachmentsList').innerHTML='';
+  document.getElementById('addOverlay').classList.add('open');
+}
+function openEditModal(id) {
+  const e=entries.find(x=>x.id===id); if(!e) return;
+  editId=id;
+  document.getElementById('modalTitle').textContent='기록 수정';
+  document.getElementById('fDate').value=e.date;
+  document.getElementById('fTitle').value=e.title;
+  document.getElementById('fBody').value=e.body;
+  document.getElementById('fCategory').value=e.category;
+  document.getElementById('linksList').innerHTML='';
+  document.getElementById('imagesList').innerHTML='';
+  document.getElementById('attachmentsList').innerHTML='';
+  (e.links||[]).forEach(l=>addLinkRow(l.label,l.url));
+  (e.images||[]).forEach(i=>addImageRow(i.label,i.url));
+  (e.attachments||[]).forEach(a=>typeof a==='object'?addAttachmentRow(a.label,a.url):addAttachmentRow('',a));
+  document.getElementById('addOverlay').classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnOverlay(e,id) { if(e.target.classList.contains('overlay')) closeModal(id); }
+
+function addLinkRow(label='',url='') {
+  const row=document.createElement('div'); row.className='link-row';
+  row.innerHTML=`<input type="text" placeholder="이름 (예: Claude)" value="${label}"><input type="url" placeholder="https://..." value="${url}"><button class="remove-link-btn" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('linksList').appendChild(row);
+}
+function addImageRow(label='',url='') {
+  const row=document.createElement('div'); row.className='image-row';
+  row.innerHTML=`
+    <input type="text" placeholder="이름" value="${label}" style="max-width:120px">
+    <input type="url" placeholder="https://i.imgur.com/..." value="${url}" oninput="previewImg(this)">
+    <img class="image-preview-thumb" src="${url||''}" ${url?'style="display:block"':''} onerror="this.style.display='none'" alt="미리보기">
+    <button class="remove-link-btn" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('imagesList').appendChild(row);
+}
+function previewImg(input) {
+  const img=input.parentElement.querySelector('.image-preview-thumb');
+  if(input.value){img.src=input.value;img.style.display='block';img.onerror=()=>{img.style.display='none'};}
+  else{img.style.display='none';}
+}
+function addAttachmentRow(label='',url='') {
+  const row=document.createElement('div'); row.className='link-row';
+  row.innerHTML=`<input type="text" placeholder="파일명" value="${label}" style="max-width:140px"><input type="url" placeholder="https://..." value="${url}"><button class="remove-link-btn" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('attachmentsList').appendChild(row);
+}
+
+async function saveEntry() {
+  const title=document.getElementById('fTitle').value.trim();
+  const body=document.getElementById('fBody').value.trim();
+  if(!title){alert('제목을 입력해주세요.');return;}
+  const links=[...document.getElementById('linksList').querySelectorAll('.link-row')].map(r=>{
+    const i=r.querySelectorAll('input'); return {label:i[0].value.trim(),url:i[1].value.trim()};
+  }).filter(l=>l.url);
+  const images=[...document.getElementById('imagesList').querySelectorAll('.image-row')].map(r=>{
+    const i=r.querySelectorAll('input'); return {label:i[0].value.trim(),url:i[1].value.trim()};
+  }).filter(i=>i.url);
+  const attachments=[...document.getElementById('attachmentsList').querySelectorAll('.link-row')].map(r=>{
+    const i=r.querySelectorAll('input'); return {label:i[0].value.trim(),url:i[1].value.trim()};
+  }).filter(a=>a.url);
+
+  showLoading('저장 중...');
+  if(editId){
+    const idx=entries.findIndex(e=>e.id===editId);
+    const updated={...entries[idx],date:document.getElementById('fDate').value,category:document.getElementById('fCategory').value,title,body,links,images,attachments};
+    await upsertEntry(updated);
+  } else {
+    const newEntry={id:Date.now().toString(),date:document.getElementById('fDate').value,category:document.getElementById('fCategory').value,title,body,links,images,attachments,created:new Date().toISOString()};
+    await upsertEntry(newEntry);
+  }
+  entries=await loadEntries();
+  hideLoading();
+  closeModal('addOverlay');
+  renderAll();
+  showToast('저장되었습니다!');
+}
+
+// ── 상세보기 ──────────────────────────────────────────────────
+function viewEntry(id) {
+  const e=entries.find(x=>x.id===id); if(!e) return;
+  const imgs=(e.images||[]).filter(i=>i&&i.url);
+  const atts=(e.attachments||[]).filter(a=>a&&(typeof a==='object'?a.url:a));
+  document.getElementById('viewModal').innerHTML=`
+    <div class="card-category" style="margin-bottom:12px">${e.category}</div>
+    <div class="view-title">${e.title}</div>
+    <div class="view-meta">${formatDate(e.date)}</div>
+    ${imgs.length?`<div class="view-images">${imgs.map(i=>`<img src="${i.url}" alt="${i.label||'이미지'}" onclick="window.open('${i.url}','_blank')" onerror="this.style.display='none'" title="${i.label||''}">`).join('')}</div>`:''}
+    <div class="view-body">${e.body}</div>
+    ${(e.links||[]).length?`<div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:500;margin-top:20px;">관련 링크</div><div class="view-links">${e.links.map(l=>`<a class="link-chip" href="${l.url}" target="_blank">🔗 ${l.label||l.url}</a>`).join('')}</div>`:''}
+    ${atts.length?`<div style="margin-top:20px"><div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:500;">📎 파일 첨부</div>${atts.map(a=>typeof a==='object'?`<a class="attachment-chip" href="${a.url}" target="_blank">🔗 ${a.label||'파일'}</a>`:`<span class="attachment-chip">📄 ${a}</span>`).join('')}</div>`:''}
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('viewOverlay')">닫기</button>
+      <button class="btn btn-primary" onclick="closeModal('viewOverlay');requirePin('edit','${e.id}')">수정</button>
+    </div>`;
+  document.getElementById('viewOverlay').classList.add('open');
+}
+async function deleteEntry(id) {
+  if(!confirm('이 기록을 삭제할까요?'))return;
+  showLoading('삭제 중...');
+  await deleteEntryFromDB(id);
+  entries=await loadEntries();
+  hideLoading();
+  renderAll();
+  showToast('삭제되었습니다.');
+}
+
+// ── AI 포트폴리오 ─────────────────────────────────────────────
+function openPf() {
+  document.getElementById('pfResult').style.display='none';
+  const saved=localStorage.getItem('claude_api_key');
+  if(saved){
+    document.getElementById('claudeApiKey').value=saved;
+    document.getElementById('apikeyBox').style.display='none';
+  } else {
+    document.getElementById('apikeyBox').style.display='block';
+  }
+  document.getElementById('pfOverlay').classList.add('open');
+}
+function closePf() { document.getElementById('pfOverlay').classList.remove('open'); }
+
+async function generatePortfolio() {
+  const apiKey=document.getElementById('claudeApiKey').value.trim();
+  if(!apiKey){document.getElementById('apikeyBox').style.display='block';alert('Claude API Key를 입력해주세요.');return;}
+  localStorage.setItem('claude_api_key',apiKey);
+  document.getElementById('apikeyBox').style.display='none';
+
+  const lang=document.getElementById('pfLang').value;
+  const purpose=document.getElementById('pfPurpose').value.trim()||'개인 포트폴리오';
+
+  const resultDiv=document.getElementById('pfResult');
+  const contentDiv=document.getElementById('pfContent');
+  resultDiv.style.display='block';
+  contentDiv.className='pf-content generating';
+  contentDiv.textContent='✨ Claude가 포트폴리오를 작성 중입니다... 잠시만 기다려주세요.';
+
+  const sorted=[...entries].sort((a,b)=>a.date.localeCompare(b.date));
+  const entriesSummary=sorted.map((e,i)=>`
+[기록 ${i+1}] ${e.date} | 카테고리: ${e.category}
+제목: ${e.title}
+내용: ${e.body}
+관련링크: ${(e.links||[]).map(l=>l.label+': '+l.url).join(', ')||'없음'}
+`).join('\n---\n');
+
+  const langPrompt = lang==='korean'?'반드시 한국어로만 작성하세요.':
+                     lang==='english'?'Write in English only.':
+                     '한국어 버전을 먼저 완성하고, 그 다음 English 버전을 작성하세요.';
+
+  const prompt=`아래는 한 개인의 AI 학습 여정 기록 전체입니다. 이를 바탕으로 "${purpose}"용 공식 포트폴리오 문서를 작성해주세요.
+
+${langPrompt}
+
+【지원자 개인정보 — 아래 형식을 그대로 사용하세요】
+성명: ${PERSONAL_INFO.nameKo} (${PERSONAL_INFO.nameEn})
+Tel: ${PERSONAL_INFO.phone}   Email: ${PERSONAL_INFO.email}
+(Tel과 Email이 한 줄에 안 들어오면 각각 별도 줄로)
+
+【AI 학습 여정 기록 전체 (총 ${entries.length}건, 날짜순)】
+${entriesSummary}
+
+【작성 형식 요청】
+1. 문서 상단에 제목, 날짜, 개인정보를 포함하세요
+2. 개요: 전체 AI 학습 여정을 2~3줄로 요약
+3. 핵심 역량: 습득한 AI 도구 및 기술 목록
+4. 주요 활동 및 성과: 기록을 시간순으로 정리
+5. 활용 플랫폼 & 도구 목록
+6. 자기소개 및 향후 방향
+7. 격식 있는 문체로, 제3자(기업/기관)에 제출 가능한 수준으로 작성`;
+
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:4000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API 오류 '+res.status);}
+    const data=await res.json();
+    const text=data.content.map(c=>c.text||'').join('');
+    contentDiv.className='pf-content';
+    contentDiv.textContent=text;
+  } catch(err) {
+    contentDiv.className='pf-content generating';
+    contentDiv.textContent='❌ 오류: '+err.message+'\n\nAPI Key를 확인하거나 다시 시도해주세요.';
+    showToast('생성 실패: '+err.message, true);
+  }
+}
+
+function copyPortfolio() {
+  const text=document.getElementById('pfContent').textContent;
+  navigator.clipboard.writeText(text)
+    .then(()=>showToast('클립보드에 복사되었습니다!'))
+    .catch(()=>showToast('복사 실패', true));
+}
+function renderMarkdown(text) {
+  return text
+    .replace(/^#### (.+)$/gm,'<h4>$1</h4>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^---+$/gm,'<hr>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>\n?)+/g,function(m){return '<ul>'+m+'</ul>';})
+    .replace(/\n\n/g,'</p><p>');
+}
+
+function printPortfolio() {
+  var raw = document.getElementById('pfContent').textContent;
+  var now = new Date();
+  var dateStr = now.getFullYear()+'년 '+(now.getMonth()+1)+'월 '+now.getDate()+'일';
+  var rendered = renderMarkdown(raw);
+  var win = window.open('','_blank');
+  win.document.write('<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>포트폴리오</title><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:\'Noto Sans KR\',sans-serif;font-weight:300;color:#1a1208;background:#fff;padding:60px 72px;font-size:10.5pt;line-height:2;}.doc-header{border-bottom:2.5px solid #1a1208;padding-bottom:20px;margin-bottom:36px;display:flex;justify-content:space-between;align-items:flex-end;}.doc-title{font-family:\'Noto Serif KR\',serif;font-size:28pt;font-weight:700;letter-spacing:-0.02em;}.doc-date{font-size:9.5pt;color:#7a6f5e;letter-spacing:0.05em;}h1{font-family:\'Noto Serif KR\',serif;font-size:15pt;font-weight:700;margin:28px 0 10px;border-bottom:1px solid #e8ddd0;padding-bottom:6px;}h2{font-family:\'Noto Serif KR\',serif;font-size:13pt;font-weight:700;margin:24px 0 8px;}h3{font-size:11.5pt;font-weight:700;margin:20px 0 6px;}h4{font-size:10.5pt;font-weight:700;margin:14px 0 4px;}p{margin:6px 0;}ul{padding-left:22px;margin:6px 0;}li{margin:3px 0;}strong{font-weight:700;}hr{border:none;border-top:1px solid #e8ddd0;margin:20px 0;}@media print{body{padding:0;}@page{margin:20mm 18mm;size:A4;}}</style></head><body><div class="doc-header"><div class="doc-title">포트폴리오</div></div><div><p>'+rendered+'</p></div><scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt></body></html>');
+  win.document.close();
+}
+
+initDB();
+</script>
+</body>
+</html>
