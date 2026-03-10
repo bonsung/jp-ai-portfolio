@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나의 AI 여정 포트폴리오</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #faf8f4; --paper: #fff9f2; --ink: #1a1208; --muted: #7a6f5e;
+    --accent: #b85c2a; --accent-light: #f0e0d0; --border: #e8ddd0; --tag-bg: #f0ebe2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif; font-weight: 300; min-height: 100vh; }
+  header { background: var(--ink); color: var(--bg); padding: 40px 60px 36px; display: flex; align-items: flex-end; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; letter-spacing: -0.02em; line-height: 1; }
+  header h1 span { font-family: 'Noto Sans KR', sans-serif; font-size: 0.75rem; font-weight: 300; display: block; color: #a89880; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+  .btn { border: none; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-size: 0.8rem; transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: white; padding: 10px 22px; font-weight: 500; letter-spacing: 0.05em; }
+  .btn-primary:hover { background: #9e4e24; }
+  .btn-ghost { background: transparent; color: #a89880; border: 1px solid #3a3020; padding: 9px 18px; }
+  .btn-ghost:hover { border-color: #a89880; color: var(--bg); }
+  .stats-bar { background: var(--accent-light); border-bottom: 1px solid var(--border); padding: 14px 60px; display: flex; gap: 40px; }
+  .stat { display: flex; align-items: baseline; gap: 8px; }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--accent); }
+  .stat-label { font-size: 0.75rem; color: var(--muted); }
+  .main { display: block; min-height: calc(100vh - 130px); }
+  .content { max-width: 900px; margin: 0 auto; padding: 40px 50px; }
+  .entries-grid { display: grid; gap: 24px; }
+  .entry-card { background: var(--paper); border: 1px solid var(--border); padding: 28px 32px; position: relative; transition: box-shadow 0.2s; cursor: pointer; }
+  .entry-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+  .entry-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); opacity: 0; transition: opacity 0.2s; }
+  .entry-card:hover::before { opacity: 1; }
+  .card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .card-date { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
+  .card-category { font-size: 0.68rem; background: var(--accent-light); color: var(--accent); padding: 2px 10px; font-weight: 500; }
+  .card-title { font-family: 'Noto Serif KR', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
+  .card-body { font-size: 0.87rem; color: var(--muted); line-height: 1.8; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-footer { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .card-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .link-chip { font-size: 0.68rem; background: var(--tag-bg); color: var(--accent); padding: 3px 10px; text-decoration: none; transition: background 0.15s; }
+  .link-chip:hover { background: var(--accent-light); }
+  .card-actions { display: flex; gap: 8px; }
+  .icon-btn { background: none; border: 1px solid var(--border); width: 30px; height: 30px; cursor: pointer; font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .attachments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .attachments-title { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .attachment-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; background: #eef4ff; color: #3b6ea8; padding: 3px 10px; margin-right: 6px; margin-bottom: 5px; border: 1px solid #c8d8f0; border-radius: 4px; cursor: pointer; text-decoration: none; transition: background 0.15s; } a.attachment-chip:hover { background: #dce9ff; }
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,8,0.6); z-index: 200; align-items: center; justify-content: center; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--paper); width: 680px; max-width: 95vw; max-height: 90vh; overflow-y: auto; padding: 48px; }
+  .modal h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  .form-group { margin-bottom: 22px; }
+  label { display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+  input[type="text"], input[type="date"], input[type="url"], textarea, select { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 0.88rem; color: var(--ink); font-weight: 300; outline: none; transition: border-color 0.15s; }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.7; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .links-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+  .link-row { display: flex; gap: 8px; align-items: center; }
+  .link-row input { flex: 1; }
+  .link-row input:first-child { max-width: 140px; }
+  .add-link-btn { font-size: 0.78rem; color: var(--accent); background: none; border: 1px dashed var(--accent); padding: 7px 16px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; }
+  .add-link-btn:hover { background: var(--accent-light); }
+  .remove-link-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; }
+  .remove-link-btn:hover { color: var(--accent); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .view-title { font-family: 'Noto Serif KR', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+  .view-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 24px; }
+  .view-body { font-size: 0.9rem; line-height: 1.9; white-space: pre-wrap; border-top: 1px solid var(--border); padding-top: 24px; margin-bottom: 24px; }
+  .view-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .search-bar { margin-bottom: 28px; position: relative; }
+  .search-bar input { padding-left: 40px; background: var(--paper); }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+  @media (max-width: 700px) {
+    header { padding: 24px 20px; } .stats-bar { padding: 14px 20px; gap: 20px; overflow-x: auto; }
+    .content { padding: 24px 20px; } .modal { padding: 28px 24px; } .form-row { grid-template-columns: 1fr; }
+  }
+  #loadingOverlay {
+    display: none; position: fixed; inset: 0; background: rgba(26,18,8,0.55);
+    z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+  }
+  #loadingOverlay.show { display: flex; }
+  .spinner { width: 32px; height: 32px; border: 3px solid #e8ddd0; border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loadingOverlay p { color: #fff9f2; font-size: 0.85rem; }
+  #toastMsg { position: fixed; bottom: 24px; right: 24px; background: var(--ink); color: var(--bg);
+    padding: 10px 20px; font-size: 0.82rem; border-radius: 4px; display: none; z-index: 1000; }
+  #toastMsg.show { display: block; }
+  #toastMsg.error { background: #b83232; }
+  @media print {
+    header, aside, .header-actions, .stats-bar, .card-actions, .search-bar { display: none !important; }
+    .main { display: block; } .content { padding: 0; } .entry-card { break-inside: avoid; margin-bottom: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>JP, AI Journey</span>AI와 함께 가는 길</h1>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="window.print()">🖨 인쇄 / PDF</button>
+    <button class="btn btn-primary" onclick="openAddModal()">+ 새 기록 추가</button>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num" id="stat-total">0</span><span class="stat-label">총 기록</span></div>
+  <div class="stat"><span class="stat-num" id="stat-days">0</span><span class="stat-label">기록 일수</span></div>
+  <div class="stat"><span class="stat-num" id="stat-links">0</span><span class="stat-label">연결된 링크</span></div>
+  <div class="stat"><span class="stat-num" id="stat-this-month">0</span><span class="stat-label">이번 달</span></div>
+</div>
+
+<div class="main">
+  
+  <div class="content">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="제목, 내용으로 검색..." oninput="renderEntries()">
+    </div>
+    <div class="entries-grid" id="entriesGrid"></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="overlay" id="addOverlay" onclick="closeOnOverlay(event,'addOverlay')">
+  <div class="modal">
+    <h2 id="modalTitle">새 기록 추가</h2>
+    <div class="form-row">
+      <div class="form-group"><label>날짜</label><input type="date" id="fDate"></div>
+      <div class="form-group"><label>카테고리</label>
+        <select id="fCategory">
+          <option value="학습">📚 학습</option><option value="바이브코딩">💻 바이브코딩</option>
+          <option value="창작물">🎨 창작물</option><option value="워크플로우">⚙️ 워크플로우</option>
+          <option value="아이디어">💡 아이디어</option><option value="성과">🏆 성과</option><option value="기타">📝 기타</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>제목</label><input type="text" id="fTitle" placeholder="오늘 배우거나 만든 것을 간단히..."></div>
+    <div class="form-group"><label>내용</label><textarea id="fBody" placeholder="오늘의 경험, 느낀 점, 배운 내용을 자유롭게 기록하세요."></textarea></div>
+    <div class="form-group"><label>관련 링크</label><div class="links-list" id="linksList"></div><button class="add-link-btn" onclick="addLinkRow()">+ 링크 추가</button></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('addOverlay')">취소</button>
+      <button class="btn btn-primary" onclick="saveEntry()">저장하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="overlay" id="viewOverlay" onclick="closeOnOverlay(event,'viewOverlay')">
+  <div class="modal" id="viewModal"></div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay"><div class="spinner"></div><p id="loadingText">저장 중...</p></div>
+<div id="toastMsg"></div>
+
+<script>
+// ============================================================
+//  ⚙️  SUPABASE 설정 — 아래 두 값을 본인 프로젝트 값으로 교체하세요
+// ============================================================
+const SUPABASE_URL = 'https://your-project-id.supabase.co';   // ← 교체
+const SUPABASE_ANON_KEY = 'your-anon-public-key';             // ← 교체
+// ============================================================
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── UI 유틸 ──────────────────────────────────────────────
+function showLoading(msg = '처리 중...') {
+  document.getElementById('loadingText').textContent = msg;
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toastMsg');
+  t.textContent = msg;
+  t.className = 'show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = '', 2800);
+}
+
+const CATS = ['전체','학습','바이브코딩','창작물','워크플로우','아이디어','성과','기타'];
+
+// ── 초기 데이터 (최초 1회 Supabase에 삽입) ──────────────
+const INITIAL_ENTRIES = [
+  {
+    id: '1001',
+    date: '2026-03-03',
+    category: '학습',
+    title: 'AI 첫 여정 — ChatGPT → Gemini → Grok → Claude',
+    body: `AI에 대한 첫 시도는 검색하기(ChatGPT)였으나, 다음 단계로 이미지 생성 및 PPT 작성(Gemini), 이미지를 이용한 동영상 제작(Grok), 그리고 바이브코딩 및 HTML 파일 제작(Claude)의 순서로 진행되었습니다.
+
+• ChatGPT (OpenAI) — 대화형 AI의 시작. 검색, 글쓰기, 질문답변에 강함. GPT-4 기반으로 자연스러운 한국어 대화 가능
+• Gemini (Google) — 구글의 멀티모달 AI. 이미지 생성 및 PPT 작성에 활용. Google Workspace와 통합이 강점
+• Grok (xAI) — 일론 머스크의 xAI가 만든 AI. 이미지를 활용한 동영상 제작에 활용. X(트위터) 플랫폼과 연동
+• Claude (Anthropic) — 바이브코딩과 HTML 파일 제작에서 압도적인 성과. 긴 문서 처리와 코딩 능력이 특히 뛰어남`,
+    links: [
+      { label: 'ChatGPT', url: 'https://chatgpt.com' },
+      { label: 'Gemini', url: 'https://gemini.google.com' },
+      { label: 'Grok', url: 'https://grok.com' },
+      { label: 'Claude', url: 'https://claude.ai' }
+    ],
+    attachments: [],
+    created: '2026-03-03T09:00:00.000Z'
+  },
+  {
+    id: '1002',
+    date: '2026-03-03',
+    category: '창작물',
+    title: 'Claude로 만든 창작물 — 엑셀 함수 파일 3종 & HTML 앱 2종',
+    body: `Claude를 통한 엑셀 함수 파일 작성과 HTML 파일 작성은 특히 감명 깊었습니다.
+작성 시간과 코딩 능력은 정말 너무도 큰 충격이었습니다.
+
+복잡한 엑셀 함수와 세련된 HTML 인터페이스를 대화 몇 번만으로 완성해내는 모습에서 AI 활용의 무한한 가능성을 실감했습니다.
+
+📊 엑셀 창작물:
+• 내수가격 동향 주요품목 분석표 (JP)
+• 알콜 중국 내수가격 분석표 (HN)
+• 중국 NBA 수출가격 분석표 (L)
+
+🌐 HTML 창작물:
+• JP Daily To-Do v3 — 개인 할일 관리 앱
+• Easytech Team Report — 팀 업무 보고 앱 (PIN 로그인 포함)`,
+    links: [
+      { label: '내수가격 동향 (Sheets)', url: 'https://docs.google.com/spreadsheets/d/1OPtsc360l-2cW74E5OnXCer0Id79OmIn' }
+    ],
+    attachments: [],
+    created: '2026-03-03T09:10:00.000Z'
+  },
+  {
+    id: '1003',
+    date: '2026-03-03',
+    category: '학습',
+    title: 'Netlify & Supabase — HTML 창작물 배포 및 데이터 공유 플랫폼',
+    body: `HTML 코딩 작품들을 공유하기 위해서는 Netlify를 통한 파일 배포와, 데이터 공유를 위한 Supabase라는 새로운 플랫폼에 대한 학습과 활용이 필요하다는 사실을 처음 알게 되었습니다.
+
+• Netlify — 정적 HTML/CSS/JS 파일을 인터넷에 무료로 배포할 수 있는 플랫폼. 파일을 드래그앤드롭하면 즉시 공유 가능한 URL이 생성됨. 별도 서버 없이 누구나 접근 가능한 웹사이트 완성
+
+• Supabase — 오픈소스 기반의 백엔드 플랫폼(Firebase 대안). PostgreSQL 데이터베이스, 인증, 실시간 데이터 공유 기능을 제공하여 HTML 앱에 데이터 저장 기능을 부여할 수 있음. 무료 플랜으로 시작 가능`,
+    links: [
+      { label: 'Netlify', url: 'https://netlify.com' },
+      { label: 'Supabase', url: 'https://supabase.com' }
+    ],
+    attachments: [],
+    created: '2026-03-03T09:20:00.000Z'
+  },
+  {
+    id: '1004',
+    date: '2026-03-03',
+    category: '워크플로우',
+    title: 'n8n 워크플로우 학습 — Crew AI에서 시작된 자동화의 세계',
+    body: `Crew AI라는 개념을 접하고 AI Agent를 직접 만들어 새로운 가치 창출이 가능할 것이라는 기대를 안고 유튜브를 찾아보기 시작했습니다.
+
+여러 유튜브에서는 Crew AI를 이해하기 위해 Make, Zapier, Opal 및 n8n 등에 대한 이해가 필요하고, 특히 n8n에 대한 공부가 필요하다는 제안이 있어서 워크플로우라는 신기한 영역을 처음 접하게 되었습니다.
+
+오늘 직접 구현한 결과:
+• Chat Trigger → AI Agent → Gmail Tool 연결 구조 완성
+• Google Gemini 모델 + Simple Memory 설정
+• 채팅으로 이메일 자동 발송 성공 ✅
+• 파일 첨부 기능 도전 중 (계속 학습 예정)`,
+    links: [
+      { label: 'n8n', url: 'https://n8n.io' },
+      { label: 'Make', url: 'https://make.com' },
+      { label: 'Crew AI', url: 'https://crewai.com' }
+    ],
+    attachments: [],
+    created: '2026-03-03T09:30:00.000Z'
+  }
+];
+
+// ── 상태 ──────────────────────────────────────────────────
+let entries = [];
+let editId = null;
+let activeFilter = '전체';
+
+// ── Supabase CRUD ─────────────────────────────────────────
+async function loadEntries() {
+  const { data, error } = await sb.from('entries').select('*').order('date', { ascending: false });
+  if (error) { showToast('데이터 불러오기 실패: ' + error.message, true); return []; }
+  return data || [];
+}
+
+async function save() {
+  // entries 배열은 항상 최신 상태 — 개별 upsert는 saveEntry()에서 처리
+}
+
+async function upsertEntry(entry) {
+  const { error } = await sb.from('entries').upsert(entry, { onConflict: 'id' });
+  if (error) { showToast('저장 실패: ' + error.message, true); return false; }
+  return true;
+}
+
+async function deleteEntryFromDB(id) {
+  const { error } = await sb.from('entries').delete().eq('id', id);
+  if (error) { showToast('삭제 실패: ' + error.message, true); return false; }
+  return true;
+}
+
+// ── 최초 초기화: DB가 비어있으면 샘플 데이터 삽입 ────────
+async function initDB() {
+  showLoading('연결 중...');
+  const { count } = await sb.from('entries').select('*', { count: 'exact', head: true });
+  if (count === 0) {
+    showLoading('초기 데이터 삽입 중...');
+    for (const e of INITIAL_ENTRIES) await upsertEntry(e);
+  }
+  entries = await loadEntries();
+  hideLoading();
+  renderAll();
+}
+
+function openAttachment(url) {
+  if (url.startsWith('data:')) {
+    try {
+      const parts = url.split(',');
+      const mime = parts[0].match(/:(.*?);/)[1];
+      const bytes = atob(parts[1]);
+      const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      const blob = new Blob([arr], {type: mime});
+      window.open(URL.createObjectURL(blob), '_blank');
+    } catch(e) { alert('열기 실패: ' + e); }
+  } else {
+    window.open(url, '_blank');
+  }
+}
+function renderAll() { renderStats(); renderFilters(); renderEntries(); }
+
+function renderStats() {
+  document.getElementById('stat-total').textContent = entries.length;
+  document.getElementById('stat-days').textContent = new Set(entries.map(e => e.date)).size;
+  document.getElementById('stat-links').textContent = entries.reduce((s,e) => s+(e.links||[]).length, 0);
+  const now = new Date();
+  document.getElementById('stat-this-month').textContent = entries.filter(e => {
+    const d = new Date(e.date); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+  }).length;
+}
+
+function renderFilters() { /* sidebar removed */ }
+
+function renderEntries() {
+  const grid = document.getElementById('entriesGrid');
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let list = entries.slice().sort((a,b) => b.date.localeCompare(a.date) || b.created.localeCompare(a.created));
+  // category filter removed
+  if (q) list = list.filter(e=>e.title.toLowerCase().includes(q)||e.body.toLowerCase().includes(q));
+  if (!list.length) { grid.innerHTML=`<div class="empty" style="text-align:center;padding:80px 40px;color:var(--muted)"><div style="font-size:3rem;margin-bottom:16px">📖</div><h3 style="font-family:'Noto Serif KR',serif;font-size:1.2rem;color:var(--ink)">검색 결과가 없습니다</h3></div>`; return; }
+  grid.innerHTML = list.map(e => `
+    <div class="entry-card" onclick="viewEntry('${e.id}')">
+      <div class="card-meta">
+        <span class="card-date">${formatDate(e.date)}</span>
+        <span class="card-category">${e.category}</span>
+      </div>
+      <div class="card-title">${e.title}</div>
+      <div class="card-body">${e.body}</div>
+      <div class="card-footer">
+        <div class="card-links">
+          ${(e.links||[]).slice(0,3).map(l=>`<a class="link-chip" href="${l.url}" target="_blank" onclick="event.stopPropagation()">🔗 ${l.label||'링크'}</a>`).join('')}
+          ${(e.links||[]).length>3?`<span class="link-chip">+${(e.links||[]).length-3}개</span>`:''}
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn" title="수정" onclick="event.stopPropagation();openEditModal('${e.id}')">✏️</button>
+          <button class="icon-btn" title="삭제" onclick="event.stopPropagation();deleteEntry('${e.id}')">🗑</button>
+        </div>
+      </div>
+      ${(e.attachments||[]).length?`<div class="attachments-section"><div class="attachments-title">📎 창작물 첨부</div>${e.attachments.map(a=>typeof a==='object'?`<span class="attachment-chip" onclick="event.stopPropagation();openAttachment('${a.url}')" style="cursor:pointer;">🔗 ${a.label}</span>`:`<span class="attachment-chip">📄 ${a}</span>`).join('')}</div>`:''}
+    </div>`).join('');
+}
+
+function formatDate(d) {
+  return new Date(d+'T00:00:00').toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+}
+
+function openAddModal() {
+  editId=null;
+  document.getElementById('modalTitle').textContent='새 기록 추가';
+  document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fTitle').value='';
+  document.getElementById('fBody').value='';
+  document.getElementById('fCategory').value='학습';
+  document.getElementById('linksList').innerHTML='';
+  document.getElementById('addOverlay').classList.add('open');
+}
+
+function openEditModal(id) {
+  const e=entries.find(x=>x.id===id); if(!e) return;
+  editId=id;
+  document.getElementById('modalTitle').textContent='기록 수정';
+  document.getElementById('fDate').value=e.date;
+  document.getElementById('fTitle').value=e.title;
+  document.getElementById('fBody').value=e.body;
+  document.getElementById('fCategory').value=e.category;
+  document.getElementById('linksList').innerHTML='';
+  (e.links||[]).forEach(l=>addLinkRow(l.label,l.url));
+  document.getElementById('addOverlay').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnOverlay(e,id) { if(e.target.classList.contains('overlay')) closeModal(id); }
+
+function addLinkRow(label='',url='') {
+  const row=document.createElement('div'); row.className='link-row';
+  row.innerHTML=`<input type="text" placeholder="이름 (예: Claude)" value="${label}"><input type="url" placeholder="https://..." value="${url}"><button class="remove-link-btn" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('linksList').appendChild(row);
+}
+
+async function saveEntry() {
+  const title = document.getElementById('fTitle').value.trim();
+  const body = document.getElementById('fBody').value.trim();
+  if (!title) { alert('제목을 입력해주세요.'); return; }
+  const links = [...document.getElementById('linksList').querySelectorAll('.link-row')].map(row => {
+    const inputs = row.querySelectorAll('input'); return { label: inputs[0].value.trim(), url: inputs[1].value.trim() };
+  }).filter(l => l.url);
+
+  const entry = {
+    id: editId || Date.now().toString(),
+    date: document.getElementById('fDate').value,
+    category: document.getElementById('fCategory').value,
+    title, body, links,
+    attachments: [],
+    created: editId ? (entries.find(e => e.id === editId)?.created || new Date().toISOString()) : new Date().toISOString()
+  };
+
+  showLoading('저장 중...');
+  const ok = await upsertEntry(entry);
+  if (ok) {
+    entries = await loadEntries();
+    showToast('저장되었습니다 ✅');
+  }
+  hideLoading();
+  closeModal('addOverlay');
+  renderAll();
+}
+
+function viewEntry(id) {
+  const e=entries.find(x=>x.id===id); if(!e) return;
+  document.getElementById('viewModal').innerHTML=`
+    <div class="card-category" style="margin-bottom:12px">${e.category}</div>
+    <div class="view-title">${e.title}</div>
+    <div class="view-meta">${formatDate(e.date)}</div>
+    <div class="view-body">${e.body}</div>
+    ${(e.links||[]).length?`<div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:500;">관련 링크</div><div class="view-links">${e.links.map(l=>`<a class="link-chip" href="${l.url}" target="_blank">🔗 ${l.label||l.url}</a>`).join('')}</div>`:''}
+    ${(e.attachments||[]).length?`<div style="margin-top:20px"><div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:500;">📎 창작물 첨부</div>${e.attachments.map(a=>typeof a==='object'?`<span class="attachment-chip" onclick="openAttachment('${a.url}')" style="cursor:pointer;">🔗 ${a.label}</span>`:`<span class="attachment-chip">📄 ${a}</span>`).join('')}</div>`:''}
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('viewOverlay')">닫기</button>
+      <button class="btn btn-primary" onclick="closeModal('viewOverlay');openEditModal('${e.id}')">수정</button>
+    </div>`;
+  document.getElementById('viewOverlay').classList.add('open');
+}
+
+async function deleteEntry(id) {
+  if (!confirm('이 기록을 삭제할까요?')) return;
+  showLoading('삭제 중...');
+  const ok = await deleteEntryFromDB(id);
+  if (ok) {
+    entries = await loadEntries();
+    showToast('삭제되었습니다');
+  }
+  hideLoading();
+  renderAll();
+}
+
+initDB();
+</script>
+</body>
+</html>
