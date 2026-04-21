@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JP, AI Journey</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --bg: #faf8f4; --paper: #fff9f2; --ink: #1a1208; --muted: #7a6f5e;
     --accent: #b85c2a; --accent-light: #f0e0d0; --border: #e8ddd0; --tag-bg: #f0ebe2;
+    --report-blue: #1a52c8; --report-pale: #eff6ff; --report-ink: #0f1c2e;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif; font-weight: 300; min-height: 100vh; }
@@ -112,19 +114,43 @@
   .pin-input:focus { border-color:var(--accent); outline:none; }
   .pin-error { color:#e53e3e; font-size:0.8rem; margin-top:10px; min-height:18px; }
   .pin-btn { margin-top:20px; width:100%; }
-  /* AI 포트폴리오 모달 */
-  .pf-overlay { display:none; position:fixed; inset:0; background:rgba(26,18,8,0.75); z-index:300; overflow-y:auto; padding:40px 20px; }
+  /* AI 보고서 모달 */
+  .pf-overlay { display:none; position:fixed; inset:0; background:rgba(15,28,46,0.82); z-index:300; overflow-y:auto; padding:40px 20px; }
   .pf-overlay.open { display:block; }
-  .pf-box { background:#fff; width:860px; max-width:98vw; margin:0 auto; padding:52px; position:relative; }
-  .pf-box h2 { font-family:'DM Serif Display',serif; font-size:1.8rem; margin-bottom:6px; color:var(--ink); }
-  .pf-subtitle { font-size:0.78rem; color:var(--muted); margin-bottom:32px; letter-spacing:0.1em; text-transform:uppercase; border-bottom:1px solid var(--border); padding-bottom:20px; }
-  .pf-content { font-size:0.92rem; line-height:2; color:#222; white-space:pre-wrap; border:1px solid var(--border); padding:32px; background:var(--bg); min-height:200px; }
+  .pf-box { background:#fff; width:920px; max-width:98vw; margin:0 auto; padding:52px; position:relative; font-family:'Pretendard','Noto Sans KR',sans-serif; }
+  .pf-box h2 { font-family:'Pretendard','Noto Sans KR',sans-serif; font-size:1.55rem; font-weight:700; margin-bottom:6px; color:#0f1c2e; letter-spacing:-0.01em; }
+  .pf-subtitle { font-size:0.73rem; color:var(--muted); margin-bottom:32px; letter-spacing:0.1em; text-transform:uppercase; border-bottom:2px solid #1a52c8; padding-bottom:16px; }
+  .pf-content { font-size:0.9rem; line-height:1.95; color:#1a2340; border:1px solid #d8e4f8; padding:36px; background:#fafcff; min-height:200px; font-family:'Pretendard','Noto Sans KR',sans-serif; }
   .pf-content.generating { color:var(--muted); font-style:italic; }
+  .pf-content h1 { font-size:1.25rem; font-weight:700; color:#0f1c2e; margin:28px 0 12px; padding-bottom:8px; border-bottom:2px solid #1a52c8; }
+  .pf-content h2 { font-size:1.05rem; font-weight:700; color:#0f1c2e; margin:22px 0 10px; padding-left:10px; border-left:3px solid #1a52c8; }
+  .pf-content h3 { font-size:0.95rem; font-weight:600; color:#263d6e; margin:16px 0 8px; }
+  .pf-content h4 { font-size:0.88rem; font-weight:600; margin:12px 0 6px; }
+  .pf-content p { margin:5px 0; }
+  .pf-content ul { padding-left:20px; margin:5px 0; }
+  .pf-content li { margin:3px 0; }
+  .pf-content strong { font-weight:700; color:#0f1c2e; }
+  .pf-content em { font-style:italic; }
+  .pf-content hr { border:none; border-top:1px solid #dce8f8; margin:20px 0; }
   .pf-actions { display:flex; gap:12px; margin-top:20px; justify-content:flex-end; flex-wrap:wrap; }
-  .apikey-box { background:var(--accent-light); border:1px solid var(--border); padding:18px 20px; margin-bottom:24px; }
+  .apikey-box { background:#eff6ff; border:1px solid #c0d0f0; padding:18px 20px; margin-bottom:24px; }
   .apikey-box p { font-size:0.8rem; color:var(--muted); margin-bottom:8px; }
   .apikey-hint { font-size:0.72rem; color:var(--muted); margin-top:6px; }
-  .apikey-hint a { color:var(--accent); }
+  .apikey-hint a { color:#1a52c8; }
+  /* 이력서 섹션 */
+  .resume-section { margin-top:40px; padding-top:32px; border-top:2px solid #1a52c8; font-family:'Pretendard','Noto Sans KR',sans-serif; }
+  .resume-section-title { font-size:1.05rem; font-weight:700; color:#0f1c2e; margin-bottom:20px; padding-left:10px; border-left:3px solid #1a52c8; }
+  .resume-block { margin-bottom:22px; }
+  .resume-block-header { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#1a52c8; margin-bottom:10px; }
+  .career-list { display:flex; flex-direction:column; gap:5px; }
+  .career-item { display:grid; grid-template-columns:165px 1fr 1fr; gap:14px; padding:10px 14px; background:#f6f9ff; border:1px solid #dce6f8; align-items:center; font-size:0.82rem; }
+  .career-item.career-current { background:#eff6ff; border-color:#b8cef8; }
+  .career-period { color:#6070a0; font-size:0.77rem; }
+  .career-org { font-weight:600; color:#0f1c2e; }
+  .career-role { color:#6070a0; font-size:0.8rem; }
+  .resume-row-2col { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:16px; }
+  .resume-info-item { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:0.83rem; color:#1a2340; }
+  .info-badge { background:#eff6ff; color:#1a52c8; font-size:0.66rem; font-weight:700; padding:2px 8px; letter-spacing:0.05em; white-space:nowrap; border:1px solid #c0d0f0; }
 </style>
 </head>
 <body>
@@ -149,8 +175,8 @@
 <!-- AI 포트폴리오 모달 -->
 <div class="pf-overlay" id="pfOverlay">
   <div class="pf-box">
-    <h2>🤖 AI 포트폴리오 생성</h2>
-    <div class="pf-subtitle">모든 기록을 종합하여 제출용 공식 포트폴리오를 자동 작성합니다</div>
+    <h2>업무와 AI 포트폴리오 및 경력내용</h2>
+    <div class="pf-subtitle">AI 학습 여정 기록을 종합하여 제출용 공식 보고서를 자동 작성합니다</div>
 
     <div class="apikey-box" id="apikeyBox">
       <p>Claude API Key를 입력하세요 (한 번 입력하면 브라우저가 기억합니다)</p>
@@ -177,13 +203,13 @@
       <div class="pf-actions">
         <button class="btn btn-ghost" onclick="copyPortfolio()">📋 복사</button>
         <button class="btn btn-ghost" onclick="printPortfolio()">🖨 인쇄 / PDF</button>
-        <button class="btn btn-primary" onclick="generatePortfolio()">🔄 다시 생성</button>
+        <button class="btn btn-primary" onclick="generatePortfolio()">다시 생성</button>
       </div>
     </div>
 
     <div style="display:flex;gap:12px;margin-top:28px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:20px;">
       <button class="btn btn-ghost" onclick="closePf()">닫기</button>
-      <button class="btn btn-ai" onclick="generatePortfolio()">✨ 포트폴리오 생성</button>
+      <button class="btn btn-ai" onclick="generatePortfolio()">보고서 생성</button>
     </div>
   </div>
 </div>
@@ -192,7 +218,7 @@
   <h1><span>JP, AI Journey</span>AI와 함께 가는 길</h1>
   <div class="header-actions">
     <button class="btn btn-ghost" onclick="window.print()">🖨 인쇄</button>
-    <button class="btn btn-ai" onclick="requirePin('portfolio')">🤖 AI 포트폴리오</button>
+    <button class="btn btn-ai" onclick="requirePin('portfolio')">AI 보고서</button>
     <button class="btn btn-primary" onclick="requirePin('add')">+ 새 기록 추가</button>
   </div>
 </header>
@@ -536,13 +562,13 @@ async function generatePortfolio() {
   document.getElementById('apikeyBox').style.display='none';
 
   const lang=document.getElementById('pfLang').value;
-  const purpose=document.getElementById('pfPurpose').value.trim()||'개인 포트폴리오';
+  const purpose=document.getElementById('pfPurpose').value.trim()||'업무와 AI 포트폴리오 및 경력내용';
 
   const resultDiv=document.getElementById('pfResult');
   const contentDiv=document.getElementById('pfContent');
   resultDiv.style.display='block';
   contentDiv.className='pf-content generating';
-  contentDiv.textContent='✨ Claude가 포트폴리오를 작성 중입니다... 잠시만 기다려주세요.';
+  contentDiv.textContent='보고서를 작성 중입니다... 잠시만 기다려주세요.';
 
   const sorted=[...entries].sort((a,b)=>a.date.localeCompare(b.date));
   const entriesSummary=sorted.map((e,i)=>`
@@ -556,25 +582,21 @@ async function generatePortfolio() {
                      lang==='english'?'Write in English only.':
                      '한국어 버전을 먼저 완성하고, 그 다음 English 버전을 작성하세요.';
 
-  const prompt=`아래는 한 개인의 AI 학습 여정 기록 전체입니다. 이를 바탕으로 "${purpose}"용 공식 포트폴리오 문서를 작성해주세요.
+  const prompt=`아래는 한 개인의 AI 학습 여정 기록 전체입니다. 이를 바탕으로 "${purpose}"용 공식 보고서를 작성해주세요.
 
 ${langPrompt}
-
-【지원자 개인정보 — 아래 형식을 그대로 사용하세요】
-성명: ${PERSONAL_INFO.nameKo} (${PERSONAL_INFO.nameEn})
-Tel: ${PERSONAL_INFO.phone}   Email: ${PERSONAL_INFO.email}
-(Tel과 Email이 한 줄에 안 들어오면 각각 별도 줄로)
 
 【AI 학습 여정 기록 전체 (총 ${entries.length}건, 날짜순)】
 ${entriesSummary}
 
 【작성 형식 요청】
-1. 문서 상단에 제목, 날짜, 개인정보를 포함하세요
-2. 개요: 전체 AI 학습 여정을 2~3줄로 요약
-3. 핵심 역량: 습득한 AI 도구 및 기술 목록
-4. 주요 활동 및 성과: 기록을 시간순으로 정리
-5. 활용 플랫폼 & 도구 목록
-6. 자기소개 및 향후 방향
+1. 문서 상단에 제목과 날짜만 포함하세요 (개인정보 섹션은 포함하지 마세요)
+2. ## 개요: 아래 방향으로 2~3문장 작성
+   "30년 화학시장 전문가 경험(삼성물산, 중국 법인 대표이사 등)을 바탕으로, 최근 AI 바이브코딩 및 업무자동화·응용프로그램 개발을 통해 새로운 부가가치를 창출하는 전문가"
+3. ## 핵심 역량: 습득한 AI 도구 및 기술 목록 (구체적이고 상세하게)
+4. ## 주요 활동 및 성과: 각 기록을 시간순으로 비교적 자세하게 정리
+5. ## 활용 플랫폼 & 도구 목록
+6. ## 향후 방향
 7. 격식 있는 문체로, 제3자(기업/기관)에 제출 가능한 수준으로 작성`;
 
   try {
@@ -587,7 +609,7 @@ ${entriesSummary}
         'anthropic-dangerous-direct-browser-access':'true'
       },
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:4000,
         messages:[{role:'user',content:prompt}]
       })
@@ -596,16 +618,47 @@ ${entriesSummary}
     const data=await res.json();
     const text=data.content.map(c=>c.text||'').join('');
     contentDiv.className='pf-content';
-    contentDiv.textContent=text;
+    contentDiv.innerHTML=renderMarkdown(text)+buildResumeHTML();
   } catch(err) {
     contentDiv.className='pf-content generating';
-    contentDiv.textContent='❌ 오류: '+err.message+'\n\nAPI Key를 확인하거나 다시 시도해주세요.';
+    contentDiv.textContent='오류: '+err.message+'\n\nAPI Key를 확인하거나 다시 시도해주세요.';
     showToast('생성 실패: '+err.message, true);
   }
 }
 
+function buildResumeHTML() {
+  return `<div class="resume-section">
+  <div class="resume-section-title">경력 및 학력</div>
+  <div class="resume-block">
+    <div class="resume-block-header">경력 요약</div>
+    <div class="career-list">
+      <div class="career-item"><span class="career-period">1996.07 – 1998.02</span><span class="career-org">삼성물산 화학사업부</span><span class="career-role">중국 유기화학 수출입</span></div>
+      <div class="career-item"><span class="career-period">1998.03 – 2000.12</span><span class="career-org">㈜M Corporation 기획이사</span><span class="career-role">상해법인 설립</span></div>
+      <div class="career-item"><span class="career-period">2001.01 – 2003.04</span><span class="career-org">대통령 비서실 행정관</span><span class="career-role">정책기획수석실</span></div>
+      <div class="career-item"><span class="career-period">2003.05 – 2008.02</span><span class="career-org">㈜인터켐코리아 대표이사</span><span class="career-role">매출 200억 · 시장점유율 20%</span></div>
+      <div class="career-item"><span class="career-period">2008.03 – 2011.12</span><span class="career-org">M Chemicals Shanghai 대표이사</span><span class="career-role">매출 2억 RMB</span></div>
+      <div class="career-item"><span class="career-period">2012.01 – 2018.12</span><span class="career-org">M Neo Materials Qingdao 대표이사</span><span class="career-role">매출 3천만 RMB</span></div>
+      <div class="career-item career-current"><span class="career-period">2018.07 – 현재</span><span class="career-org">Qingdao Easytech CEO</span><span class="career-role">수출입 무역법인</span></div>
+    </div>
+  </div>
+  <div class="resume-row-2col">
+    <div class="resume-block">
+      <div class="resume-block-header">학력</div>
+      <div class="resume-info-item"><span class="info-badge">학사</span><span>서울대학교 경영학과 (1989 – 1996)</span></div>
+    </div>
+    <div class="resume-block">
+      <div class="resume-block-header">자격증 · 핵심역량</div>
+      <div class="resume-info-item"><span class="info-badge">자격</span><span>무역사 (한국무역협회, 1996)</span></div>
+      <div class="resume-info-item"><span class="info-badge">역량</span><span>중국어 고급</span></div>
+      <div class="resume-info-item"><span class="info-badge">역량</span><span>전략기획</span></div>
+      <div class="resume-info-item"><span class="info-badge">역량</span><span>AI 코딩 · 업무자동화</span></div>
+    </div>
+  </div>
+</div>`;
+}
+
 function copyPortfolio() {
-  const text=document.getElementById('pfContent').textContent;
+  const text=document.getElementById('pfContent').innerText;
   navigator.clipboard.writeText(text)
     .then(()=>showToast('클립보드에 복사되었습니다!'))
     .catch(()=>showToast('복사 실패', true));
@@ -625,12 +678,30 @@ function renderMarkdown(text) {
 }
 
 function printPortfolio() {
-  var raw = document.getElementById('pfContent').textContent;
-  var now = new Date();
-  var dateStr = now.getFullYear()+'년 '+(now.getMonth()+1)+'월 '+now.getDate()+'일';
-  var rendered = renderMarkdown(raw);
+  var content = document.getElementById('pfContent').innerHTML;
+  if(!content||content.trim()==='') return;
   var win = window.open('','_blank');
-  win.document.write('<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>포트폴리오</title><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:\'Noto Sans KR\',sans-serif;font-weight:300;color:#1a1208;background:#fff;padding:60px 72px;font-size:10.5pt;line-height:2;}.doc-header{border-bottom:2.5px solid #1a1208;padding-bottom:20px;margin-bottom:36px;display:flex;justify-content:space-between;align-items:flex-end;}.doc-title{font-family:\'Noto Serif KR\',serif;font-size:28pt;font-weight:700;letter-spacing:-0.02em;}.doc-date{font-size:9.5pt;color:#7a6f5e;letter-spacing:0.05em;}h1{font-family:\'Noto Serif KR\',serif;font-size:15pt;font-weight:700;margin:28px 0 10px;border-bottom:1px solid #e8ddd0;padding-bottom:6px;}h2{font-family:\'Noto Serif KR\',serif;font-size:13pt;font-weight:700;margin:24px 0 8px;}h3{font-size:11.5pt;font-weight:700;margin:20px 0 6px;}h4{font-size:10.5pt;font-weight:700;margin:14px 0 4px;}p{margin:6px 0;}ul{padding-left:22px;margin:6px 0;}li{margin:3px 0;}strong{font-weight:700;}hr{border:none;border-top:1px solid #e8ddd0;margin:20px 0;}@media print{body{padding:0;}@page{margin:20mm 18mm;size:A4;}}</style></head><body><div class="doc-header"><div class="doc-title">포트폴리오</div></div><div><p>'+rendered+'</p></div><scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt></body></html>');
+  win.document.write('<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>업무와 AI 포트폴리오 및 경력내용</title>'
+    +'<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:\'Pretendard\',\'Noto Sans KR\',sans-serif;color:#0f1c2e;background:#fff;padding:56px 68px;font-size:10pt;line-height:1.95;}'
+    +'h1{font-size:15pt;font-weight:700;margin:26px 0 12px;padding-bottom:7px;border-bottom:2px solid #1a52c8;color:#0f1c2e;}'
+    +'h2{font-size:12.5pt;font-weight:700;margin:20px 0 9px;padding-left:9px;border-left:3px solid #1a52c8;color:#0f1c2e;}'
+    +'h3{font-size:11pt;font-weight:600;margin:15px 0 7px;color:#263d6e;}'
+    +'h4{font-size:10pt;font-weight:600;margin:11px 0 5px;}'
+    +'p{margin:5px 0;}ul{padding-left:20px;margin:5px 0;}li{margin:3px 0;}strong{font-weight:700;}hr{border:none;border-top:1px solid #dce8f8;margin:18px 0;}'
+    +'.resume-section{margin-top:36px;padding-top:28px;border-top:2px solid #1a52c8;}'
+    +'.resume-section-title{font-size:12pt;font-weight:700;color:#0f1c2e;margin-bottom:18px;padding-left:9px;border-left:3px solid #1a52c8;}'
+    +'.resume-block{margin-bottom:18px;}'
+    +'.resume-block-header{font-size:7.5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#1a52c8;margin-bottom:8px;}'
+    +'.career-list{display:flex;flex-direction:column;gap:4px;}'
+    +'.career-item{display:grid;grid-template-columns:152px 1fr 1fr;gap:12px;padding:8px 12px;background:#f6f9ff;border:1px solid #dce6f8;align-items:center;font-size:8.5pt;}'
+    +'.career-item.career-current{background:#eff6ff;border-color:#b8cef8;}'
+    +'.career-period{color:#6070a0;font-size:8pt;}.career-org{font-weight:600;color:#0f1c2e;}.career-role{color:#6070a0;}'
+    +'.resume-row-2col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px;}'
+    +'.resume-info-item{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:8.5pt;color:#1a2340;}'
+    +'.info-badge{background:#eff6ff;color:#1a52c8;font-size:7pt;font-weight:700;padding:1px 7px;letter-spacing:0.05em;white-space:nowrap;border:1px solid #c0d0f0;}'
+    +'@media print{body{padding:0;}@page{margin:18mm 16mm;size:A4;}}'
+    +'</style></head><body>'+content+'<scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt></body></html>');
   win.document.close();
 }
 
