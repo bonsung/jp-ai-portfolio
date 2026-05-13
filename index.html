@@ -265,6 +265,10 @@
 <div class="overlay" id="addOverlay" onclick="closeOnOverlay(event,'addOverlay')">
   <div class="modal">
     <h2 id="modalTitle">새 기록 추가</h2>
+    <div class="modal-actions" style="margin-top:0;padding-top:0;border-top:none;margin-bottom:24px;">
+      <button class="btn btn-ghost" onclick="closeModal('addOverlay')">취소</button>
+      <button class="btn btn-primary" onclick="saveEntry()">저장하기</button>
+    </div>
     <div class="form-row">
       <div class="form-group"><label>날짜</label><input type="date" id="fDate"></div>
       <div class="form-group"><label>카테고리</label>
