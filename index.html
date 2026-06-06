@@ -510,9 +510,11 @@ function addAttachmentRow(label='',url='') {
 }
 
 async function saveEntry() {
+  if(saveEntry._saving) return;
+  saveEntry._saving=true;
   const title=document.getElementById('fTitle').value.trim();
   const body = bodyQuill ? getQuillValue(bodyQuill) : '';
-  if(!title){alert('제목을 입력해주세요.');return;}
+  if(!title){alert('제목을 입력해주세요.'); saveEntry._saving=false; return;}
   const links=[...document.getElementById('linksList').querySelectorAll('.link-row')].map(r=>{
     const i=r.querySelectorAll('input'); return {label:i[0].value.trim(),url:i[1].value.trim()};
   }).filter(l=>l.url);
@@ -523,20 +525,29 @@ async function saveEntry() {
     const i=r.querySelectorAll('input'); return {label:i[0].value.trim(),url:i[1].value.trim()};
   }).filter(a=>a.url);
 
-  showLoading('저장 중...');
+  let snapshot=null;
   if(editId){
     const idx=entries.findIndex(e=>e.id===editId);
+    snapshot={...entries[idx]};
     const updated={...entries[idx],date:document.getElementById('fDate').value,category:document.getElementById('fCategory').value,title,body,links,images,attachments};
-    await upsertEntry(updated);
+    entries[idx]=updated;
+    closeModal('addOverlay');
+    renderAll();
+    showToast('저장되었습니다!');
+    saveEntry._saving=false;
+    const ok=await upsertEntry(updated);
+    if(!ok){ entries[idx]=snapshot; renderAll(); showToast('저장 실패 — 재시도 해주세요.', true); }
   } else {
-    const newEntry={id:Date.now().toString(),date:document.getElementById('fDate').value,category:document.getElementById('fCategory').value,title,body,links,images,attachments,created:new Date().toISOString()};
-    await upsertEntry(newEntry);
+    const newEntry={id:'temp_'+Date.now(),date:document.getElementById('fDate').value,category:document.getElementById('fCategory').value,title,body,links,images,attachments,created:new Date().toISOString()};
+    entries.unshift(newEntry);
+    closeModal('addOverlay');
+    renderAll();
+    showToast('저장되었습니다!');
+    saveEntry._saving=false;
+    const ok=await upsertEntry({...newEntry, id:Date.now().toString()});
+    if(!ok){ entries=entries.filter(e=>e.id!==newEntry.id); renderAll(); showToast('저장 실패 — 재시도 해주세요.', true); }
+    else { entries=await loadEntries(); renderAll(); }
   }
-  entries=await loadEntries();
-  hideLoading();
-  closeModal('addOverlay');
-  renderAll();
-  showToast('저장되었습니다!');
 }
 
 // ── 상세보기 ──────────────────────────────────────────────────
@@ -560,12 +571,11 @@ function viewEntry(id) {
 }
 async function deleteEntry(id) {
   if(!confirm('이 기록을 삭제할까요?'))return;
-  showLoading('삭제 중...');
-  await deleteEntryFromDB(id);
-  entries=await loadEntries();
-  hideLoading();
+  const snapshot=[...entries];
+  entries=entries.filter(e=>e.id!==id);
   renderAll();
   showToast('삭제되었습니다.');
+  await deleteEntryFromDB(id);
 }
 
 // ── AI 포트폴리오 ─────────────────────────────────────────────

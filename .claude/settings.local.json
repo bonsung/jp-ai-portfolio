@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:\\\\Users\\\\Samsung\\\\Desktop\\\\AI 관련 코딩 작업물\\\\AI 포트폴리오_supabase_jp ai road\" config --global user.name)",
+      "Bash(git config:*)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(supabase *)",
+      "Bash(npm install *)",
+      "WebFetch(domain:bonsung.github.io)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(start \"\" \"C:\\\\Users\\\\Samsung\\\\Desktop\\\\AI 관련 코딩 작업물\\\\Netlify Easytech Final\\\\index.html\")",
+      "Bash(start \"\" \"C:\\\\Users\\\\Samsung\\\\Desktop\\\\0 AI 포트폴리오_supabase_jp ai road\\\\index.html\")",
+      "Bash(start \"\" \"C:/Users/Samsung/Desktop/AI 관련 코딩 작업물/Netlify Easytech Final/index.html\")",
+      "Bash(start \"\" \"C:/Users/Samsung/Desktop/0 AI 포트폴리오_supabase_jp ai road/index.html\")",
+      "Bash(npm uninstall *)",
+      "Bash(npm run *)",
+      "PowerShell(netlify *)",
+      "Bash(netlify sites:list)",
+      "Bash(start https://bonsung.github.io/PendingMate/)",
+      "Bash(start https://app.netlify.com/teams/bonsung/overview)",
+      "Bash(start \"file:///C:/Users/Samsung/Desktop/AI%20관련%20코딩%20작업물/Netlify%20Easytech%20Final/index.html\")",
+      "Bash(start *)",
+      "Bash(git commit -m 'fix: Quill CDN을 cdn.quilljs.com → cdn.jsdelivr.net으로 교체 *)",
+      "Bash(gh --version)",
+      "Bash(netlify --version)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(netlify login *)",
+      "Bash(netlify deploy *)"
+    ]
+  }
+}
