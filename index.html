@@ -17,7 +17,7 @@
     --report-blue: #1a52c8; --report-pale: #eff6ff; --report-ink: #0f1c2e;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif; font-weight: 300; min-height: 100vh; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif; font-weight: 300; min-height: 100vh; overflow-wrap: break-word; word-break: break-word; }
   header { background: var(--ink); color: var(--bg); padding: 40px 60px 36px; display: flex; align-items: flex-end; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
   header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; letter-spacing: -0.02em; line-height: 1; }
   header h1 span { font-family: 'Noto Sans KR', sans-serif; font-size: 0.75rem; font-weight: 300; display: block; color: #a89880; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
@@ -43,8 +43,8 @@
   .card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
   .card-date { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
   .card-category { font-size: 0.68rem; background: var(--accent-light); color: var(--accent); padding: 2px 10px; font-weight: 500; }
-  .card-title { font-family: 'Noto Serif KR', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
-  .card-body { font-size: 0.87rem; color: var(--muted); line-height: 1.8; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-title { font-family: 'Noto Serif KR', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; line-height: 1.4; overflow-wrap: break-word; word-break: break-word; }
+  .card-body { font-size: 0.87rem; color: var(--muted); line-height: 1.8; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: break-word; word-break: break-word; }
   .card-footer { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
   .card-links { display: flex; gap: 8px; flex-wrap: wrap; }
   .link-chip { font-size: 0.68rem; background: var(--tag-bg); color: var(--accent); padding: 3px 10px; text-decoration: none; transition: background 0.15s; }
