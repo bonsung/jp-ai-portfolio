@@ -386,11 +386,13 @@ async function loadEntries() {
 }
 async function upsertEntry(entry) {
   const { error } = await sb.from('entries').upsert(entry, { onConflict: 'id' });
-  if (error) showToast('저장 실패: ' + error.message, true);
+  if (error) { showToast('저장 실패: ' + error.message, true); return false; }
+  return true;
 }
 async function deleteEntryFromDB(id) {
   const { error } = await sb.from('entries').delete().eq('id', id);
-  if (error) showToast('삭제 실패: ' + error.message, true);
+  if (error) { showToast('삭제 실패: ' + error.message, true); return false; }
+  return true;
 }
 async function initDB() {
   showLoading('연결 중...');
@@ -574,8 +576,9 @@ async function deleteEntry(id) {
   const snapshot=[...entries];
   entries=entries.filter(e=>e.id!==id);
   renderAll();
-  showToast('삭제되었습니다.');
-  await deleteEntryFromDB(id);
+  const ok=await deleteEntryFromDB(id);
+  if(ok) showToast('삭제되었습니다.');
+  else { entries=snapshot; renderAll(); }
 }
 
 // ── AI 포트폴리오 ─────────────────────────────────────────────
