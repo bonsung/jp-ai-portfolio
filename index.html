@@ -432,7 +432,7 @@ function renderEntries() {
       </div>
       <div class="card-title">${e.title}</div>
       ${imgs.length?`<div class="card-image-preview"><img src="${imgs[0].url}" alt="${imgs[0].label||'이미지'}" onerror="this.style.display='none'"></div>`:''}
-      <div class="card-body">${stripHtml(e.body)}</div>
+      <div class="card-body">${previewBody(e.body)}</div>
       <div class="card-footer">
         <div class="card-links">
           ${(e.links||[]).slice(0,3).map(l=>`<a class="link-chip" href="${l.url}" target="_blank" onclick="event.stopPropagation()">🔗 ${l.label||'링크'}</a>`).join('')}
@@ -1020,9 +1020,17 @@ initDB();
 // ── HTML 유틸 ──────────────────────────────────────────────
 function stripHtml(text) {
   if (!text) return '';
+  const withBreaks = text.replace(/<\/(p|div|li|h[1-6])>/gi, '\n').replace(/<br\s*\/?>/gi, '\n');
   const d = document.createElement('div');
-  d.innerHTML = text;
-  return d.textContent || d.innerText || '';
+  d.innerHTML = withBreaks;
+  const t = d.textContent || d.innerText || '';
+  return t.replace(/\n{3,}/g, '\n\n').replace(/^\n+|\n+$/g, '');
+}
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function previewBody(text) {
+  return escapeHtml(stripHtml(text)).replace(/\n/g, '<br>');
 }
 function getQuillValue(quill) {
   return quill.getText().trim() ? quill.root.innerHTML : '';
