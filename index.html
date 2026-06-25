@@ -660,7 +660,7 @@ ${entriesSummary}
     const data=await res.json();
     const text=data.content.map(c=>c.text||'').join('');
     contentDiv.className='pf-content';
-    contentDiv.innerHTML=renderMarkdown(text)+buildResumeHTML();
+    contentDiv.innerHTML=renderMarkdown(text)+buildResumeHTML(lang);
   } catch(err) {
     contentDiv.className='pf-content generating';
     contentDiv.textContent='오류: '+err.message+'\n\nAPI Key를 확인하거나 다시 시도해주세요.';
@@ -668,10 +668,172 @@ ${entriesSummary}
   }
 }
 
-function buildResumeHTML() {
+function buildResumeHTML(lang) {
+  lang = lang || 'korean';
+  const T = {
+    korean: {
+      pageLabel: '이 력 서',
+      name: '박종필', nameEn: 'PARK JONG-PIL',
+      addr: '서울 관악구 남부순환로251번길 10-15',
+      infoLabels: ['생년월일','나이','최종학력','경력'],
+      infoVals: ['1969.04.23','만 57세','서울대 경영','28년+'],
+      sec1: '핵심역량 &amp; 소개',
+      pills: ['🇨🇳 중국어 고급 (업무 구사)','⚗️ 화학분야 전문 경험','🌏 해외법인 경영 20년+','🤖 AI 코딩 &amp; 업무자동화 기초'],
+      intro: `약 <strong>20년간 중국에 거주</strong>하며 해외 제조법인·무역법인 <strong>대표이사</strong>로 활동, 화학·도료 분야 신규 시장 개척 및 프로젝트 수행을 주도하였습니다. 고등학교부터 익혀온 중국어로 <strong>고급 비즈니스 회화·독해</strong>를 구사하며, 최근에는 AI 기반 코딩 및 <strong>업무 자동화 개발</strong>에도 역량을 쌓고 있습니다.`,
+      sec2: '경력 사항 &amp; 기술',
+      careers: [
+        {dates:'2018.07<br>~ 현재', badge:'재직 중', current:true, company:'Qingdao Easytech Imp&amp;Exp Co., Ltd', role:'CEO', desc:'중국 칭다오 소재 수출입 무역법인 대표', tags:['중국 무역','법인 경영']},
+        {dates:'2012.01<br>~ 2018.12', badge:'정규직', company:'M Neo Materials Qingdao', role:'대표이사', desc:'건축용 수성 다채무늬도료 제조 중국법인 · 직원 25명<br>중국 부동산 개발상 대상 도료 특화영업 / 산동·서안·연길·훈춘 현장 프로젝트 수행', tags:['제조법인 경영','B2B 영업','중국 부동산','프로젝트 관리']},
+        {dates:'2008.03<br>~ 2011.12', badge:'정규직', company:'M Chemicals (Shanghai)', role:'대표이사', desc:'유기·무기·정밀·의약 케미칼 전문 무역 및 중국 내수 · 직원 30명<br>MPEG 등 중국 고속철 콘크리트 감수제 원료시장 공격적 마케팅 성공', tags:['화학 트레이딩','신시장 개척','중국 내수']},
+        {dates:'2003.05<br>~ 2008.02', badge:'정규직', company:'㈜인터켐코리아', role:'대표이사', desc:'M Corp 계열사, 계면활성제 위주 제품영업 · 직원 5명<br>MPEG·MAA 제품 중국 내 MS 최대 20% 정착 / 롯데화학·한농화성·LGMMA 중국 진출 기여', tags:['법인 경영','중국 진출','시장 점유율']},
+        {dates:'2001.01<br>~ 2003.04', badge:'공무직', company:'대통령 비서실', role:'정책기획수석실 5급 / 비서실장실 4급 행정관', desc:'국정 정책기획 및 행정·보좌업무 수행', tags:['정책기획','국정 행정']},
+        {dates:'1998.03<br>~ 2000.12', badge:'정규직', company:'㈜M Corporation', role:'기획이사', desc:'삼성물산 출신 창업, 화학제품 전문 무역 — 1998년 상해사무소 개설·법인화 / 1999년 인터켐코리아 설립 주도', tags:['창업','해외법인 설립']},
+        {dates:'1996.07<br>~ 1998.02', badge:'정규직', company:'삼성물산', role:'화학사업부 유기화학팀 · 주임', desc:'메탄올·MEG 등 유기화학 제품 중국 수출 및 중국산 화학제품 국내 수입·판매', tags:['종합상사','중국 수출입']}
+      ],
+      sec3: '학력',
+      edu: [
+        {period:'1989.03 – 1996.06', school:'서울대학교', dept:'경영학과', badge:'졸업'},
+        {period:'1985.03 – 1988.02', school:'순천고등학교', dept:'-', badge:'졸업'},
+        {period:'1982.03 – 1985.02', school:'구례중학교', dept:'-', badge:'졸업'}
+      ],
+      sec4: '스킬 &amp; 자격증',
+      skillsTitle: '역량 수준',
+      skills: [
+        {name:'중국어', level:'고급 (업무 구사)', w:95},
+        {name:'전략기획 · 사업개발', level:'전문가', w:92},
+        {name:'MS-Office', level:'상급', w:88},
+        {name:'AI 코딩 · 업무자동화', level:'기초 보유', w:45},
+        {name:'영어', level:'비즈니스 회화', w:55}
+      ],
+      certTitle: '자격증',
+      certName: '무역사', certOrg: '한국무역협회', certYr: '1996.10',
+      sec5: '신상 정보',
+      personal: [
+        {label:'결혼여부', val:'기혼'},
+        {label:'신장 / 체중', val:'174cm / 73kg'},
+        {label:'혈액형', val:'B형'},
+        {label:'시력', val:'좌 1.2 / 우 1.2'},
+        {label:'병역', val:'육군 병장 · 포병'},
+        {label:'복무기간', val:'32개월 · 필'}
+      ]
+    },
+    english: {
+      pageLabel: 'RESUME',
+      name: 'PARK JONG-PIL', nameEn: '',
+      addr: '10-15, Nambusunhwan-ro 251-gil, Gwanak-gu, Seoul',
+      infoLabels: ['Date of Birth','Age','Education','Career'],
+      infoVals: ['1969.04.23','57','Seoul Nat\'l Univ, Business','28+ yrs'],
+      sec1: 'Core Competencies &amp; Profile',
+      pills: ['🇨🇳 Advanced Chinese (Business-level)','⚗️ Chemical Industry Expertise','🌏 20+ Years Overseas Subsidiary Management','🤖 AI Coding &amp; Business Automation (Basic)'],
+      intro: `Resided in China for approximately <strong>20 years</strong>, serving as <strong>CEO</strong> of manufacturing and trading subsidiaries, leading new market development and project execution in the chemical and coatings sectors. Fluent in <strong>advanced business-level Chinese</strong> conversation and reading (acquired since high school). Recently building competency in <strong>AI-based coding and business automation</strong> development.`,
+      sec2: 'Career History &amp; Skills',
+      careers: [
+        {dates:'2018.07<br>– Present', badge:'Current', current:true, company:'Qingdao Easytech Imp&amp;Exp Co., Ltd', role:'CEO', desc:'Representative of an import/export trading company based in Qingdao, China.', tags:['Trade company management','China trade operations']},
+        {dates:'2012.01<br>– 2018.12', badge:'Full-time', company:'M Neo Materials Qingdao', role:'CEO', desc:'China subsidiary manufacturing water-based multicolor coatings for construction; 25 employees. Specialized sales to Chinese real estate developers; led projects in Shandong, Xi\'an, Yanji, Hunchun.', tags:['Manufacturing management','B2B sales','China real estate project management']},
+        {dates:'2008.03<br>– 2011.12', badge:'Full-time', company:'M Chemicals (Shanghai)', role:'CEO', desc:'Specialized trading and China domestic sales of organic, inorganic, fine, and pharmaceutical chemicals; 30 employees. Successful aggressive marketing of MPEG and other raw materials for China\'s high-speed rail concrete admixture market.', tags:['Chemical trading','New market development','China domestic market']},
+        {dates:'2003.05<br>– 2008.02', badge:'Full-time', company:'Interchem Korea Co., Ltd', role:'CEO', desc:'M Corp affiliate, surfactant-focused sales; 5 employees. Achieved up to 20% market share for MPEG/MAA products in China; contributed to Lotte Chemical, Hannong Chemicals, and LG MMA\'s China market entry.', tags:['Corporate management','China market entry','Market share']},
+        {dates:'2001.01<br>– 2003.04', badge:'Gov\'t', company:'Office of the President (Korea)', role:'Administrative Officer (Policy Planning Office Grade 5 / Chief of Staff Office Grade 4)', desc:'Performed national policy planning and administrative/support duties.', tags:['Policy planning','National administration']},
+        {dates:'1998.03<br>– 2000.12', badge:'Full-time', company:'M Corporation', role:'Planning Director', desc:'Founded by Samsung Corporation alumnus, specialized chemical product trading. Established Shanghai office and incorporated it in 1998; led the founding of Interchem Korea in 1999.', tags:['Startup founding','Overseas subsidiary establishment']},
+        {dates:'1996.07<br>– 1998.02', badge:'Full-time', company:'Samsung Corporation', role:'Chemical Business Division, Organic Chemicals Team, Assistant Manager', desc:'Export of methanol, MEG, and other organic chemicals to China; import and domestic sales of Chinese chemical products.', tags:['Trading company','China import/export']}
+      ],
+      sec3: 'Education',
+      edu: [
+        {period:'1989.03 – 1996.06', school:'Seoul National University', dept:'Business Administration', badge:'Graduated'},
+        {period:'1985.03 – 1988.02', school:'Suncheon High School', dept:'', badge:'Graduated'},
+        {period:'1982.03 – 1985.02', school:'Gurye Middle School', dept:'', badge:'Graduated'}
+      ],
+      sec4: 'Skills &amp; Certifications',
+      skillsTitle: 'Proficiency',
+      skills: [
+        {name:'Chinese', level:'Advanced (Business-level)', w:95},
+        {name:'Strategic Planning · Business Development', level:'Expert', w:92},
+        {name:'MS Office', level:'Advanced', w:88},
+        {name:'AI Coding · Business Automation', level:'Basic', w:45},
+        {name:'English', level:'Business Conversation', w:55}
+      ],
+      certTitle: 'Certifications',
+      certName: 'Licensed International Trade Specialist', certOrg: 'Korea International Trade Association', certYr: '1996.10',
+      sec5: 'Personal Information',
+      personal: [
+        {label:'Marital Status', val:'Married'},
+        {label:'Height / Weight', val:'174cm / 73kg'},
+        {label:'Blood Type', val:'B'},
+        {label:'Eyesight', val:'L 1.2 / R 1.2'},
+        {label:'Military Service', val:'Army Sergeant · Artillery'},
+        {label:'Service Period', val:'32 months · Completed'}
+      ]
+    },
+    chinese: {
+      pageLabel: '简 历',
+      name: '朴钟弼', nameEn: 'PARK JONG-PIL',
+      addr: '首尔市冠岳区南部循环路251街10-15',
+      infoLabels: ['出生日期','年龄','最终学历','工作经历'],
+      infoVals: ['1969.04.23','57岁','首尔大学经营学','28年以上'],
+      sec1: '核心能力与简介',
+      pills: ['🇨🇳 中文高级（业务沟通水平）','⚗️ 化学领域专业经验','🌏 海外法人经营20年以上','🤖 AI编程与业务自动化基础'],
+      intro: `在中国居住约<strong>20年</strong>，担任海外制造法人、贸易法人<strong>代表董事</strong>，主导化工、涂料领域新市场开拓及项目推进工作。自高中时期开始学习中文，可进行<strong>高级商务会话与读写</strong>。近期在AI编程及<strong>业务自动化开发</strong>方面也积累了相关能力。`,
+      sec2: '工作经历与技能',
+      careers: [
+        {dates:'2018.07<br>– 至今', badge:'在职', current:true, company:'青岛易思泰科进出口有限公司', role:'CEO', desc:'位于中国青岛的进出口贸易法人代表。', tags:['贸易公司经营','中国进出口业务']},
+        {dates:'2012.01<br>– 2018.12', badge:'正式员工', company:'青岛艾慕新材料', role:'CEO', desc:'建筑用水性多彩涂料制造中国法人，员工25人。面向中国房地产开发商的涂料专项营销，主导山东、西安、延吉、珲春等地项目。', tags:['制造法人经营','B2B营销','中国房地产项目管理']},
+        {dates:'2008.03<br>– 2011.12', badge:'正式员工', company:'艾慕化学（上海）', role:'CEO', desc:'专营有机、无机、精细、医药化学品贸易及中国内销，员工30人。成功开拓MPEG等中国高铁混凝土减水剂原料市场的积极营销。', tags:['化学贸易','新市场开拓','中国内销市场']},
+        {dates:'2003.05<br>– 2008.02', badge:'正式员工', company:'IntercheKorea', role:'CEO', desc:'M Corp系企业，以表面活性剂为主的产品营销，员工5人。MPEG、MAA产品在中国市场占有率最高达20%，助力乐天化学、韩农化成、LG MMA进入中国市场。', tags:['法人经营','中国市场进入','市场占有率']},
+        {dates:'2001.01<br>– 2003.04', badge:'公务员', company:'总统府秘书室', role:'政策企划首席室5级／秘书室长室4级行政官', desc:'负责国政政策企划及行政辅助工作。', tags:['政策企划','国政行政']},
+        {dates:'1998.03<br>– 2000.12', badge:'正式员工', company:'M Corporation', role:'企划理事', desc:'由三星物产出身人士创立，专营化学产品贸易。1998年开设上海事务所并完成法人化，1999年主导创立IntercheKorea。', tags:['创业','海外法人设立']},
+        {dates:'1996.07<br>– 1998.02', badge:'正式员工', company:'三星物产', role:'化学事业部有机化学组・主任', desc:'负责甲醇、MEG等有机化学品对中国的出口及中国产化学品的国内进口销售。', tags:['综合商社','中国进出口']}
+      ],
+      sec3: '学历',
+      edu: [
+        {period:'1989.03 – 1996.06', school:'首尔大学', dept:'经营学系', badge:'毕业'},
+        {period:'1985.03 – 1988.02', school:'顺天高等学校', dept:'', badge:'毕业'},
+        {period:'1982.03 – 1985.02', school:'求礼中学校', dept:'', badge:'毕业'}
+      ],
+      sec4: '技能与资格证',
+      skillsTitle: '能力水平',
+      skills: [
+        {name:'中文', level:'高级（业务沟通水平）', w:95},
+        {name:'战略企划・事业开发', level:'专家', w:92},
+        {name:'MS-Office', level:'高级', w:88},
+        {name:'AI编程・业务自动化', level:'具备基础', w:45},
+        {name:'英语', level:'商务会话', w:55}
+      ],
+      certTitle: '资格证',
+      certName: '贸易师', certOrg: '韩国贸易协会', certYr: '1996.10',
+      sec5: '个人信息',
+      personal: [
+        {label:'婚姻状况', val:'已婚'},
+        {label:'身高 / 体重', val:'174cm / 73kg'},
+        {label:'血型', val:'B型'},
+        {label:'视力', val:'左1.2 / 右1.2'},
+        {label:'兵役', val:'陆军军士长・炮兵'},
+        {label:'服役期间', val:'32个月・已服完'}
+      ]
+    }
+  };
+  const d = T[lang] || T.korean;
+  const careersHTML = d.careers.map(c=>`
+          <div class="rcc">
+            <div class="rcc-left"><div class="rcc-dates">${c.dates}</div><span class="rcc-badge${c.current?' current':''}">${c.badge}</span></div>
+            <div class="rcc-right">
+              <div class="rcc-company">${c.company}</div>
+              <div class="rcc-role">${c.role}</div>
+              <div class="rcc-desc">${c.desc}</div>
+              <div class="rtags">${c.tags.map(t=>`<span class="rtag">${t}</span>`).join('')}</div>
+            </div>
+          </div>`).join('');
+  const eduHTML = d.edu.map(e=>`
+          <div class="redu-item"><span class="redu-period">${e.period}</span><div><div class="redu-school">${e.school}</div>${e.dept?`<div class="redu-dept">${e.dept}</div>`:''}</div><span class="redu-badge">${e.badge}</span></div>`).join('');
+  const skillsHTML = d.skills.map(s=>`
+            <div class="rsk-item"><div class="rsk-hd"><span class="rsk-name">${s.name}</span><span class="rsk-level">${s.level}</span></div><div class="rsk-bar"><div class="rsk-fill" style="width:${s.w}%"></div></div></div>`).join('');
+  const personalHTML = d.personal.map(p=>`
+          <div class="rpitem"><div class="rplabel">${p.label}</div><div class="rpvalue">${p.val}</div></div>`).join('');
+  const infoCardsHTML = d.infoLabels.map((lbl,i)=>`
+          <div class="rir"><div class="ril">${lbl}</div><div class="riv">${d.infoVals[i]}</div></div>`).join('');
+  const pillsHTML = d.pills.map(p=>`<span class="rpill">${p}</span>`).join('');
+
   return `
 <div class="resume-page-sep">
-  <span class="resume-page-sep-label">이 력 서</span>
+  <span class="resume-page-sep-label">${d.pageLabel}</span>
   <span class="resume-page-sep-line"></span>
 </div>
 <style>
@@ -754,8 +916,8 @@ function buildResumeHTML() {
     <header class="rhero">
       <div class="rhi">
         <div>
-          <h2 class="rname">박종필</h2>
-          <p class="rname-en">PARK JONG-PIL</p>
+          <h2 class="rname">${d.name}</h2>
+          ${d.nameEn?`<p class="rname-en">${d.nameEn}</p>`:''}
           <div class="rcontacts">
             <span class="rci">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 010 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
@@ -767,141 +929,49 @@ function buildResumeHTML() {
             </span>
             <span class="rci">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              서울 관악구 남부순환로251번길 10-15
+              ${d.addr}
             </span>
           </div>
         </div>
         <div class="ricard">
-          <div class="rir"><div class="ril">생년월일</div><div class="riv">1969.04.23</div></div>
-          <div class="rir"><div class="ril">나이</div><div class="riv">만 57세</div></div>
-          <div class="rir"><div class="ril">최종학력</div><div class="riv">서울대 경영</div></div>
-          <div class="rir"><div class="ril">경력</div><div class="riv">28년+</div></div>
+          ${infoCardsHTML}
         </div>
       </div>
     </header>
     <div class="rbody">
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">01</span><span class="rsec-ttl">핵심역량 &amp; 소개</span><div class="rsec-line"></div></div>
-        <div class="rpills">
-          <span class="rpill"><span class="rpill-icon">🇨🇳</span>중국어 고급 (업무 구사)</span>
-          <span class="rpill"><span class="rpill-icon">⚗️</span>화학분야 전문 경험</span>
-          <span class="rpill"><span class="rpill-icon">🌏</span>해외법인 경영 20년+</span>
-          <span class="rpill"><span class="rpill-icon">🤖</span>AI 코딩 &amp; 업무자동화 기초</span>
-        </div>
-        <div class="rintro">
-          약 <strong>20년간 중국에 거주</strong>하며 해외 제조법인·무역법인 <strong>대표이사</strong>로 활동,
-          화학·도료 분야 신규 시장 개척 및 프로젝트 수행을 주도하였습니다.
-          고등학교부터 익혀온 중국어로 <strong>고급 비즈니스 회화·독해</strong>를 구사하며,
-          최근에는 AI 기반 코딩 및 <strong>업무 자동화 개발</strong>에도 역량을 쌓고 있습니다.
-        </div>
+        <div class="rsec-head"><span class="rsec-num">01</span><span class="rsec-ttl">${d.sec1}</span><div class="rsec-line"></div></div>
+        <div class="rpills">${pillsHTML}</div>
+        <div class="rintro">${d.intro}</div>
       </section>
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">02</span><span class="rsec-ttl">경력 사항 &amp; 기술</span><div class="rsec-line"></div></div>
-        <div class="rcareer-list">
-          <div class="rcc">
-            <div class="rcc-left"><div class="rcc-dates">2018.07<br>~ 현재</div><span class="rcc-badge current">재직 중</span></div>
-            <div class="rcc-right">
-              <div class="rcc-company">Qingdao Easytech Imp&amp;Exp Co., Ltd</div>
-              <div class="rcc-role">CEO</div>
-              <div class="rcc-desc">중국 칭다오 소재 수출입 무역법인 대표</div>
-              <div class="rtags"><span class="rtag">중국 무역</span><span class="rtag">법인 경영</span></div>
-            </div>
-          </div>
-          <div class="rcc">
-            <div class="rcc-left"><div class="rcc-dates">2012.01<br>~ 2018.12</div><span class="rcc-badge">정규직</span></div>
-            <div class="rcc-right">
-              <div class="rcc-company">M Neo Materials Qingdao</div>
-              <div class="rcc-role">대표이사</div>
-              <div class="rcc-desc">건축용 수성 다채무늬도료 제조 중국법인 · 직원 25명<br>중국 부동산 개발상 대상 도료 특화영업 / 산동·서안·연길·훈춘 현장 프로젝트 수행</div>
-              <div class="rtags"><span class="rtag">제조법인 경영</span><span class="rtag">B2B 영업</span><span class="rtag">중국 부동산</span><span class="rtag">프로젝트 관리</span></div>
-            </div>
-          </div>
-          <div class="rcc">
-            <div class="rcc-left"><div class="rcc-dates">2008.03<br>~ 2011.12</div><span class="rcc-badge">정규직</span></div>
-            <div class="rcc-right">
-              <div class="rcc-company">M Chemicals (Shanghai)</div>
-              <div class="rcc-role">대표이사</div>
-              <div class="rcc-desc">유기·무기·정밀·의약 케미칼 전문 무역 및 중국 내수 · 직원 30명<br>MPEG 등 중국 고속철 콘크리트 감수제 원료시장 공격적 마케팅 성공</div>
-              <div class="rtags"><span class="rtag">화학 트레이딩</span><span class="rtag">신시장 개척</span><span class="rtag">중국 내수</span></div>
-            </div>
-          </div>
-          <div class="rcc">
-            <div class="rcc-left"><div class="rcc-dates">2003.05<br>~ 2008.02</div><span class="rcc-badge">정규직</span></div>
-            <div class="rcc-right">
-              <div class="rcc-company">㈜인터켐코리아</div>
-              <div class="rcc-role">대표이사</div>
-              <div class="rcc-desc">M Corp 계열사, 계면활성제 위주 제품영업 · 직원 5명<br>MPEG·MAA 제품 중국 내 MS 최대 20% 정착 / 롯데화학·한농화성·LGMMA 중국 진출 기여</div>
-              <div class="rtags"><span class="rtag">법인 경영</span><span class="rtag">중국 진출</span><span class="rtag">시장 점유율</span></div>
-            </div>
-          </div>
-          <div class="rcc">
-            <div class="rcc-left"><div class="rcc-dates">2001.01<br>~ 2003.04</div><span class="rcc-badge">공무직</span></div>
-            <div class="rcc-right">
-              <div class="rcc-company">대통령 비서실</div>
-              <div class="rcc-role">정책기획수석실 5급 / 비서실장실 4급 행정관</div>
-              <div class="rcc-desc">국정 정책기획 및 행정·보좌업무 수행</div>
-              <div class="rtags"><span class="rtag">정책기획</span><span class="rtag">국정 행정</span></div>
-            </div>
-          </div>
-          <div class="rcc">
-            <div class="rcc-left"><div class="rcc-dates">1998.03<br>~ 2000.12</div><span class="rcc-badge">정규직</span></div>
-            <div class="rcc-right">
-              <div class="rcc-company">㈜M Corporation</div>
-              <div class="rcc-role">기획이사</div>
-              <div class="rcc-desc">삼성물산 출신 창업, 화학제품 전문 무역 — 1998년 상해사무소 개설·법인화 / 1999년 인터켐코리아 설립 주도</div>
-              <div class="rtags"><span class="rtag">창업</span><span class="rtag">해외법인 설립</span></div>
-            </div>
-          </div>
-          <div class="rcc">
-            <div class="rcc-left"><div class="rcc-dates">1996.07<br>~ 1998.02</div><span class="rcc-badge">정규직</span></div>
-            <div class="rcc-right">
-              <div class="rcc-company">삼성물산</div>
-              <div class="rcc-role">화학사업부 유기화학팀 · 주임</div>
-              <div class="rcc-desc">메탄올·MEG 등 유기화학 제품 중국 수출 및 중국산 화학제품 국내 수입·판매</div>
-              <div class="rtags"><span class="rtag">종합상사</span><span class="rtag">중국 수출입</span></div>
-            </div>
-          </div>
-        </div>
+        <div class="rsec-head"><span class="rsec-num">02</span><span class="rsec-ttl">${d.sec2}</span><div class="rsec-line"></div></div>
+        <div class="rcareer-list">${careersHTML}</div>
       </section>
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">03</span><span class="rsec-ttl">학력</span><div class="rsec-line"></div></div>
-        <div class="redu-list">
-          <div class="redu-item"><span class="redu-period">1989.03 – 1996.06</span><div><div class="redu-school">서울대학교</div><div class="redu-dept">경영학과</div></div><span class="redu-badge">졸업</span></div>
-          <div class="redu-item"><span class="redu-period">1985.03 – 1988.02</span><div><div class="redu-school">순천고등학교</div><div class="redu-dept">-</div></div><span class="redu-badge">졸업</span></div>
-          <div class="redu-item"><span class="redu-period">1982.03 – 1985.02</span><div><div class="redu-school">구례중학교</div><div class="redu-dept">-</div></div><span class="redu-badge">졸업</span></div>
-        </div>
+        <div class="rsec-head"><span class="rsec-num">03</span><span class="rsec-ttl">${d.sec3}</span><div class="rsec-line"></div></div>
+        <div class="redu-list">${eduHTML}</div>
       </section>
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">04</span><span class="rsec-ttl">스킬 &amp; 자격증</span><div class="rsec-line"></div></div>
+        <div class="rsec-head"><span class="rsec-num">04</span><span class="rsec-ttl">${d.sec4}</span><div class="rsec-line"></div></div>
         <div class="rtwocol">
           <div class="rsk-col">
-            <h4>역량 수준</h4>
-            <div class="rsk-item"><div class="rsk-hd"><span class="rsk-name">중국어</span><span class="rsk-level">고급 (업무 구사)</span></div><div class="rsk-bar"><div class="rsk-fill" style="width:95%"></div></div></div>
-            <div class="rsk-item"><div class="rsk-hd"><span class="rsk-name">전략기획 · 사업개발</span><span class="rsk-level">전문가</span></div><div class="rsk-bar"><div class="rsk-fill" style="width:92%"></div></div></div>
-            <div class="rsk-item"><div class="rsk-hd"><span class="rsk-name">MS-Office</span><span class="rsk-level">상급</span></div><div class="rsk-bar"><div class="rsk-fill" style="width:88%"></div></div></div>
-            <div class="rsk-item"><div class="rsk-hd"><span class="rsk-name">AI 코딩 · 업무자동화</span><span class="rsk-level">기초 보유</span></div><div class="rsk-bar"><div class="rsk-fill" style="width:45%"></div></div></div>
-            <div class="rsk-item"><div class="rsk-hd"><span class="rsk-name">영어</span><span class="rsk-level">비즈니스 회화</span></div><div class="rsk-bar"><div class="rsk-fill" style="width:55%"></div></div></div>
+            <h4>${d.skillsTitle}</h4>
+            ${skillsHTML}
           </div>
           <div class="rcert-col">
-            <h4>자격증</h4>
+            <h4>${d.certTitle}</h4>
             <div class="rcert-item">
               <div class="rcert-ico"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
-              <div><div class="rcert-name">무역사</div><div class="rcert-org">한국무역협회</div></div>
-              <span class="rcert-yr">1996.10</span>
+              <div><div class="rcert-name">${d.certName}</div><div class="rcert-org">${d.certOrg}</div></div>
+              <span class="rcert-yr">${d.certYr}</span>
             </div>
           </div>
         </div>
       </section>
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">05</span><span class="rsec-ttl">신상 정보</span><div class="rsec-line"></div></div>
-        <div class="rpgrid">
-          <div class="rpitem"><div class="rplabel">결혼여부</div><div class="rpvalue">기혼</div></div>
-          <div class="rpitem"><div class="rplabel">신장 / 체중</div><div class="rpvalue">174cm / 73kg</div></div>
-          <div class="rpitem"><div class="rplabel">혈액형</div><div class="rpvalue">B형</div></div>
-          <div class="rpitem"><div class="rplabel">시력</div><div class="rpvalue">좌 1.2 / 우 1.2</div></div>
-          <div class="rpitem"><div class="rplabel">병역</div><div class="rpvalue">육군 병장 · 포병</div></div>
-          <div class="rpitem"><div class="rplabel">복무기간</div><div class="rpvalue">32개월 · 필</div></div>
-        </div>
+        <div class="rsec-head"><span class="rsec-num">05</span><span class="rsec-ttl">${d.sec5}</span><div class="rsec-line"></div></div>
+        <div class="rpgrid">${personalHTML}</div>
       </section>
     </div>
   </div>
