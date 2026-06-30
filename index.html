@@ -714,7 +714,11 @@ ${entriesSummary}
     });
     if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API 오류 '+res.status);}
     const data=await res.json();
-    const text=data.content.map(c=>c.text||'').join('');
+    let text=data.content.map(c=>c.text||'').join('');
+    text=text.replace(/\s*\d{4}\s*년\s*\d{1,2}\s*월\s*기준/g,'')
+             .replace(/\s*As of\s+\w+\s+\d{4}/gi,'')
+             .replace(/\s*截至\s*\d{4}\s*年\s*\d{1,2}\s*月/g,'')
+             .replace(/\n{3,}/g,'\n\n');
     contentDiv.className='pf-content';
     contentDiv.innerHTML=renderMarkdown(text)+buildResumeHTML(lang);
   } catch(err) {
