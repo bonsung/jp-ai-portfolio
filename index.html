@@ -107,7 +107,9 @@
   @media print {
     header, .header-actions, .stats-bar, .card-actions, .search-bar { display: none !important; }
     .main { display: block; } .content { padding: 0; } .entry-card { break-inside: avoid; margin-bottom: 20px; }
-    .resume-page-sep { page-break-before: always; break-before: page; }
+    .resume-page-sep { page-break-before: always !important; break-before: page !important; }
+    .re { page-break-before: always !important; break-before: page !important; }
+    .re .rhero { break-inside: avoid !important; page-break-inside: avoid !important; }
     .resume-page-sep-label { display: none !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
   }
@@ -172,7 +174,7 @@
   .resume-info-item { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:0.83rem; color:#1a2340; }
   .info-badge { background:#eff6ff; color:#1a52c8; font-size:0.66rem; font-weight:700; padding:2px 8px; letter-spacing:0.05em; white-space:nowrap; border:1px solid #c0d0f0; }
   /* 이력서 페이지 구분 */
-  .resume-page-sep { margin:48px 0 0; padding:20px 0 0; border-top:3px solid #1a52c8; display:flex; align-items:center; gap:16px; }
+  .resume-page-sep { margin:48px 0 0; padding:20px 0 0; border-top:3px solid #1a52c8; display:flex; align-items:center; gap:16px; page-break-before: always; break-before: page; }
   .resume-page-sep-label { font-family:'Pretendard','Noto Sans KR',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#fff; background:#1a52c8; padding:4px 16px; white-space:nowrap; }
   .resume-page-sep-line { flex:1; height:1px; background:#d1ddf0; }
 </style>
@@ -953,16 +955,18 @@ function buildResumeHTML(lang) {
   .re .rprofile-img{width:80px !important;height:80px !important;}
 }
 @media print{
-  .re .resume-page-sep{page-break-before:always;break-before:page;}
+  .re{page-break-before:always !important;break-before:page !important;}
+  .re .resume-page-sep{page-break-before:always !important;break-before:page !important;}
   .re .resume-page-sep-label{display:none !important;}
+  .re .rhero{break-inside:avoid !important;page-break-inside:avoid !important;}
   .re .rprofile-img{width:150px !important;height:150px !important;border-radius:12px !important;}
   .re *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
   .re .rhero,.re .rwrap{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
 }
 </style>
-<div class="re">
+<div class="re" style="break-before:page !important;page-break-before:always !important;">
   <div class="rwrap">
-    <header class="rhero">
+    <header class="rhero" style="break-inside:avoid !important;page-break-inside:avoid !important;">
       <div class="rhi">
         <div style="display:flex;align-items:center;gap:28px;">
           <img src="assets/profile.jpg" alt="${d.name}" class="rprofile-img"
