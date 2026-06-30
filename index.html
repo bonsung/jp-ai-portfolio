@@ -111,7 +111,9 @@
     .re { page-break-before: always !important; break-before: page !important; }
     .re .rhero { break-inside: avoid !important; page-break-inside: avoid !important; }
     .resume-page-sep-label { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; overflow: hidden !important; padding: 0 !important; margin: 0 !important; }
-    .rsec-head { break-after: avoid !important; page-break-after: avoid !important; }
+    .rsec-anchor { display: block; break-inside: avoid-page !important; page-break-inside: avoid !important; }
+    .rsec-head { break-after: avoid-page !important; page-break-after: avoid !important; }
+    .rsec-head + * { break-before: avoid-page !important; page-break-before: avoid !important; }
     .rsec { break-inside: auto; page-break-inside: auto; }
     .rcc { break-inside: avoid !important; page-break-inside: avoid !important; }
     .redu-item { break-inside: avoid !important; page-break-inside: avoid !important; }
@@ -904,6 +906,7 @@ function buildResumeHTML(lang) {
 .re .riv{font-size:13px;font-weight:600;color:#fff;}
 .re .rbody{padding:48px 60px 0;}
 .re .rsec{margin-bottom:48px;}
+.re .rsec-anchor{display:contents;}
 .re .rsec-head{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
 .re .rsec-num{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--blue);letter-spacing:1px;}
 .re .rsec-ttl{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0f1c2e;}
@@ -965,7 +968,9 @@ function buildResumeHTML(lang) {
   .re .resume-page-sep{page-break-before:always !important;break-before:page !important;}
   .re .resume-page-sep-label{display:none !important;visibility:hidden !important;width:0 !important;height:0 !important;overflow:hidden !important;padding:0 !important;margin:0 !important;}
   .re .rhero{break-inside:avoid !important;page-break-inside:avoid !important;}
-  .re .rsec-head{break-after:avoid !important;page-break-after:avoid !important;}
+  .re .rsec-anchor{display:block;break-inside:avoid-page !important;page-break-inside:avoid !important;}
+  .re .rsec-head{break-after:avoid-page !important;page-break-after:avoid !important;}
+  .re .rsec-head+*{break-before:avoid-page !important;page-break-before:avoid !important;}
   .re .rsec{break-inside:auto;page-break-inside:auto;}
   .re .rcc{break-inside:avoid !important;page-break-inside:avoid !important;}
   .re .redu-item{break-inside:avoid !important;page-break-inside:avoid !important;}
@@ -1013,20 +1018,28 @@ function buildResumeHTML(lang) {
     </header>
     <div class="rbody">
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">01</span><span class="rsec-ttl">${d.sec1}</span><div class="rsec-line"></div></div>
-        <div class="rpills">${pillsHTML}</div>
+        <div class="rsec-anchor">
+          <div class="rsec-head"><span class="rsec-num">01</span><span class="rsec-ttl">${d.sec1}</span><div class="rsec-line"></div></div>
+          <div class="rpills">${pillsHTML}</div>
+        </div>
         <div class="rintro">${d.intro}</div>
       </section>
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">02</span><span class="rsec-ttl">${d.sec2}</span><div class="rsec-line"></div></div>
+        <div class="rsec-anchor">
+          <div class="rsec-head"><span class="rsec-num">02</span><span class="rsec-ttl">${d.sec2}</span><div class="rsec-line"></div></div>
+        </div>
         <div class="rcareer-list">${careersHTML}</div>
       </section>
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">03</span><span class="rsec-ttl">${d.sec3}</span><div class="rsec-line"></div></div>
+        <div class="rsec-anchor">
+          <div class="rsec-head"><span class="rsec-num">03</span><span class="rsec-ttl">${d.sec3}</span><div class="rsec-line"></div></div>
+        </div>
         <div class="redu-list">${eduHTML}</div>
       </section>
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">04</span><span class="rsec-ttl">${d.sec4}</span><div class="rsec-line"></div></div>
+        <div class="rsec-anchor">
+          <div class="rsec-head"><span class="rsec-num">04</span><span class="rsec-ttl">${d.sec4}</span><div class="rsec-line"></div></div>
+        </div>
         <div class="rtwocol">
           <div class="rsk-col">
             <h4>${d.skillsTitle}</h4>
@@ -1043,8 +1056,10 @@ function buildResumeHTML(lang) {
         </div>
       </section>
       <section class="rsec">
-        <div class="rsec-head"><span class="rsec-num">05</span><span class="rsec-ttl">${d.sec5}</span><div class="rsec-line"></div></div>
-        <div class="rpgrid">${personalHTML}</div>
+        <div class="rsec-anchor">
+          <div class="rsec-head"><span class="rsec-num">05</span><span class="rsec-ttl">${d.sec5}</span><div class="rsec-line"></div></div>
+          <div class="rpgrid">${personalHTML}</div>
+        </div>
       </section>
     </div>
   </div>
