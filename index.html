@@ -955,7 +955,7 @@ function buildResumeHTML(lang) {
 @media print{
   .re .resume-page-sep{page-break-before:always;break-before:page;}
   .re .resume-page-sep-label{display:none !important;}
-  .re .rprofile-img{width:150px !important;height:150px !important;}
+  .re .rprofile-img{width:150px !important;height:150px !important;object-position:center 10% !important;}
   .re *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
   .re .rhero,.re .rwrap{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
 }
@@ -966,14 +966,18 @@ function buildResumeHTML(lang) {
       <div class="rhi">
         <div style="display:flex;align-items:center;gap:28px;">
           <img src="assets/profile.jpg" alt="${d.name}" class="rprofile-img"
-               style="width:150px;height:150px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.3);flex-shrink:0;">
+               style="width:150px;height:150px;border-radius:50%;object-fit:cover;object-position:center 10%;border:3px solid rgba(255,255,255,.3);flex-shrink:0;">
           <div>
             <h2 class="rname">${d.name}</h2>
             ${d.nameEn?`<p class="rname-en">${d.nameEn}</p>`:''}
             <div class="rcontacts">
               <span class="rci">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 010 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
-                +82 10-5376-4383 / +86 139-1696-1763
+                +82 10-5376-4383
+              </span>
+              <span class="rci">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 010 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+                +86 139-1696-1763
               </span>
               <span class="rci">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
