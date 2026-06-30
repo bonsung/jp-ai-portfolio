@@ -955,7 +955,7 @@ function buildResumeHTML(lang) {
 @media print{
   .re .resume-page-sep{page-break-before:always;break-before:page;}
   .re .resume-page-sep-label{display:none !important;}
-  .re .rprofile-img{width:150px !important;height:150px !important;object-position:center 10% !important;}
+  .re .rprofile-img{width:150px !important;height:150px !important;object-position:20% 20% !important;}
   .re *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
   .re .rhero,.re .rwrap{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
 }
@@ -966,7 +966,7 @@ function buildResumeHTML(lang) {
       <div class="rhi">
         <div style="display:flex;align-items:center;gap:28px;">
           <img src="assets/profile.jpg" alt="${d.name}" class="rprofile-img"
-               style="width:150px;height:150px;border-radius:50%;object-fit:cover;object-position:center 10%;border:3px solid rgba(255,255,255,.3);flex-shrink:0;">
+               style="width:150px;height:150px;border-radius:50%;object-fit:cover;object-position:20% 20%;border:3px solid rgba(255,255,255,.3);flex-shrink:0;">
           <div>
             <h2 class="rname">${d.name}</h2>
             ${d.nameEn?`<p class="rname-en">${d.nameEn}</p>`:''}
