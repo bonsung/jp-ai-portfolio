@@ -111,14 +111,14 @@
     .re { page-break-before: always !important; break-before: page !important; }
     .re .rhero { break-inside: avoid !important; page-break-inside: avoid !important; }
     .resume-page-sep-label { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; overflow: hidden !important; padding: 0 !important; margin: 0 !important; }
-    .rsec-anchor { display: block; break-inside: avoid-page !important; page-break-inside: avoid !important; }
-    .rsec-head { break-after: avoid-page !important; page-break-after: avoid !important; }
-    .rsec-head + * { break-before: avoid-page !important; page-break-before: avoid !important; }
-    .rsec { break-inside: auto; page-break-inside: auto; }
-    .rcc { break-inside: avoid !important; page-break-inside: avoid !important; }
-    .redu-item { break-inside: avoid !important; page-break-inside: avoid !important; }
-    .rpills { break-after: avoid !important; page-break-after: avoid !important; }
-    .rintro { break-inside: avoid !important; page-break-inside: avoid !important; }
+    .re .rsec-anchor { display: block; break-inside: avoid-page !important; page-break-inside: avoid !important; }
+    .re .rsec-head { break-after: avoid-page !important; page-break-after: avoid !important; }
+    .re .rsec-head + * { break-before: avoid-page !important; page-break-before: avoid !important; }
+    .re .rsec { break-inside: auto; page-break-inside: auto; }
+    .re .rcc { break-inside: avoid !important; page-break-inside: avoid !important; }
+    .re .redu-item { break-inside: avoid !important; page-break-inside: avoid !important; }
+    .re .rpills { break-after: avoid !important; page-break-after: avoid !important; }
+    .re .rintro { break-inside: avoid !important; page-break-inside: avoid !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
   }
   /* ── QUILL ── */
@@ -976,6 +976,8 @@ function buildResumeHTML(lang) {
   .re .redu-item{break-inside:avoid !important;page-break-inside:avoid !important;}
   .re .rpills{break-after:avoid !important;page-break-after:avoid !important;}
   .re .rintro{break-inside:avoid !important;page-break-inside:avoid !important;}
+  .re .rbody{padding:30px 48px 0 !important;}
+  .re .rsec{margin-bottom:30px !important;}
   .re .rprofile-img{width:150px !important;height:150px !important;border-radius:12px !important;}
   .re *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
   .re .rhero,.re .rwrap{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
