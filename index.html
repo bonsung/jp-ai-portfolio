@@ -119,6 +119,12 @@
     .re .redu-item { break-inside: avoid !important; page-break-inside: avoid !important; }
     .re .rpills { break-after: avoid !important; page-break-after: avoid !important; }
     .re .rintro { break-inside: avoid !important; page-break-inside: avoid !important; }
+    .pf-content { line-height: 1.65 !important; padding: 24px !important; }
+    .pf-content p { margin: 3px 0 !important; }
+    .pf-content h2 { margin: 14px 0 7px !important; }
+    .pf-content h3 { margin: 10px 0 5px !important; }
+    .pf-content ul { margin: 4px 0 !important; }
+    .pf-content li { margin: 2px 0 !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
   }
   /* ── QUILL ── */
@@ -967,17 +973,18 @@ function buildResumeHTML(lang) {
   .re{page-break-before:always !important;break-before:page !important;}
   .re .resume-page-sep{page-break-before:always !important;break-before:page !important;}
   .re .resume-page-sep-label{display:none !important;visibility:hidden !important;width:0 !important;height:0 !important;overflow:hidden !important;padding:0 !important;margin:0 !important;}
-  .re .rhero{break-inside:avoid !important;page-break-inside:avoid !important;}
+  .re .rhero{break-inside:avoid !important;page-break-inside:avoid !important;padding:36px 50px 28px !important;}
   .re .rsec-anchor{display:block;break-inside:avoid-page !important;page-break-inside:avoid !important;}
-  .re .rsec-head{break-after:avoid-page !important;page-break-after:avoid !important;}
+  .re .rsec-head{break-after:avoid-page !important;page-break-after:avoid !important;margin-bottom:16px !important;}
   .re .rsec-head+*{break-before:avoid-page !important;page-break-before:avoid !important;}
-  .re .rsec{break-inside:auto;page-break-inside:auto;}
+  .re .rsec{break-inside:auto;page-break-inside:auto;margin-bottom:24px !important;}
   .re .rcc{break-inside:avoid !important;page-break-inside:avoid !important;}
   .re .redu-item{break-inside:avoid !important;page-break-inside:avoid !important;}
   .re .rpills{break-after:avoid !important;page-break-after:avoid !important;}
-  .re .rintro{break-inside:avoid !important;page-break-inside:avoid !important;}
-  .re .rbody{padding:30px 48px 0 !important;}
-  .re .rsec{margin-bottom:30px !important;}
+  .re .rintro{break-inside:avoid !important;page-break-inside:avoid !important;line-height:1.7 !important;padding:14px 18px !important;}
+  .re .rcareer-list{gap:10px !important;}
+  .re .rcc-desc{line-height:1.6 !important;margin-bottom:6px !important;}
+  .re .rbody{padding:24px 44px 0 !important;}
   .re .rprofile-img{width:150px !important;height:150px !important;border-radius:12px !important;}
   .re *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
   .re .rhero,.re .rwrap{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
