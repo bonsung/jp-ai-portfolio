@@ -108,6 +108,8 @@
     header, .header-actions, .stats-bar, .card-actions, .search-bar { display: none !important; }
     .main { display: block; } .content { padding: 0; } .entry-card { break-inside: avoid; margin-bottom: 20px; }
     .resume-page-sep { page-break-before: always; break-before: page; }
+    .resume-page-sep-label { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
   }
   /* ── QUILL ── */
   .quill-wrap{border:1px solid var(--border);border-radius:0;background:var(--bg);transition:border-color 0.15s;}
@@ -326,7 +328,7 @@ const PERSONAL_INFO = {
   nameKo: '박종필',
   nameEn: 'Park, Jong Pil',
   phone: '+82 10-5376-4383 / +86 139-1696-1763',
-  email: 'jppark0307@daum.net / pjp0307@gmail.com'
+  email: 'pjp0307@gmail.com'
 };
 
 let entries = [];
@@ -951,7 +953,10 @@ function buildResumeHTML(lang) {
 }
 @media print{
   .re .resume-page-sep{page-break-before:always;break-before:page;}
-  .re .rprofile-img{width:100px !important;height:100px !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .re .resume-page-sep-label{display:none !important;}
+  .re .rprofile-img{width:100px !important;height:100px !important;}
+  .re *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
+  .re .rhero,.re .rwrap{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
 }
 </style>
 <div class="re">
@@ -971,7 +976,7 @@ function buildResumeHTML(lang) {
               </span>
               <span class="rci">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
-                pjp0307@daum.net
+                pjp0307@gmail.com
               </span>
               <span class="rci">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
