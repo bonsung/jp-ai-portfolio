@@ -110,7 +110,7 @@
     .resume-page-sep { page-break-before: always !important; break-before: page !important; }
     .re { page-break-before: always !important; break-before: page !important; }
     .re .rhero { break-inside: avoid !important; page-break-inside: avoid !important; }
-    .resume-page-sep-label { display: none !important; }
+    .resume-page-sep-label { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; overflow: hidden !important; padding: 0 !important; margin: 0 !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
   }
   /* ── QUILL ── */
@@ -957,7 +957,7 @@ function buildResumeHTML(lang) {
 @media print{
   .re{page-break-before:always !important;break-before:page !important;}
   .re .resume-page-sep{page-break-before:always !important;break-before:page !important;}
-  .re .resume-page-sep-label{display:none !important;}
+  .re .resume-page-sep-label{display:none !important;visibility:hidden !important;width:0 !important;height:0 !important;overflow:hidden !important;padding:0 !important;margin:0 !important;}
   .re .rhero{break-inside:avoid !important;page-break-inside:avoid !important;}
   .re .rprofile-img{width:150px !important;height:150px !important;border-radius:12px !important;}
   .re *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
@@ -1084,7 +1084,7 @@ function printPortfolio() {
     +'.info-badge{background:#eff6ff;color:#1a52c8;font-size:7pt;font-weight:700;padding:1px 7px;letter-spacing:0.05em;white-space:nowrap;border:1px solid #c0d0f0;}'
     +'@media print{body{padding:0;}@page{margin:18mm 16mm;size:A4;}}'
     +'.resume-page-sep{margin:40px 0 0;padding:18px 0 0;border-top:3px solid #1a52c8;display:flex;align-items:center;gap:14px;}'
-    +'.resume-page-sep-label{font-size:0.7rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:#1a52c8;padding:4px 14px;white-space:nowrap;}'
+    +'.resume-page-sep-label{display:none !important;visibility:hidden !important;width:0 !important;height:0 !important;overflow:hidden !important;padding:0 !important;margin:0 !important;}'
     +'.resume-page-sep-line{flex:1;height:1px;background:#d1ddf0;}'
     +'.re{font-family:\'Pretendard\',\'Noto Sans KR\',sans-serif;color:#0f1c2e;margin-top:28px;}'
     +'.re *{box-sizing:border-box;margin:0;padding:0;}'
