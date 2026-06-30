@@ -121,6 +121,7 @@
     .re .rintro { break-inside: avoid !important; page-break-inside: avoid !important; }
     .pf-content { line-height: 1.65 !important; padding: 24px !important; }
     .pf-content p { margin: 3px 0 !important; }
+    .pf-content h1, .pf-content h2, .pf-content h3, .pf-content h4 { break-after: avoid-page !important; page-break-after: avoid !important; }
     .pf-content h2 { margin: 14px 0 7px !important; }
     .pf-content h3 { margin: 10px 0 5px !important; }
     .pf-content ul { margin: 4px 0 !important; }
@@ -236,10 +237,6 @@
     <div class="form-group">
       <label>제출 목적</label>
       <input type="text" id="pfPurpose" placeholder="예: AI 스타트업 지원, 사내 발표, 개인 기록 정리 등">
-    </div>
-    <div class="form-group">
-      <label>기준 날짜</label>
-      <input type="date" id="pfDate">
     </div>
 
     <div id="pfResult" style="display:none;margin-top:28px;">
@@ -615,7 +612,6 @@ function openPf() {
   } else {
     document.getElementById('apikeyBox').style.display='block';
   }
-  document.getElementById('pfDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('pfOverlay').classList.add('open');
 }
 function closePf() { document.getElementById('pfOverlay').classList.remove('open'); }
@@ -628,11 +624,6 @@ async function generatePortfolio() {
 
   const lang=document.getElementById('pfLang').value;
   const purpose=document.getElementById('pfPurpose').value.trim()||'업무와 AI 포트폴리오 및 경력내용';
-  const pfDateVal=document.getElementById('pfDate').value||new Date().toISOString().split('T')[0];
-  const pfYear=pfDateVal.split('-')[0];
-  const pfMonth=parseInt(pfDateVal.split('-')[1]);
-  const monthEn=['January','February','March','April','May','June','July','August','September','October','November','December'][pfMonth-1];
-
   const resultDiv=document.getElementById('pfResult');
   const contentDiv=document.getElementById('pfContent');
   resultDiv.style.display='block';
@@ -661,12 +652,7 @@ ${langPrompt}
 ${entriesSummary}
 
 【작성 형식 요청】
-1. 문서 상단 제목 바로 아래에 기준 날짜를 다음 형식으로 정확히 포함하세요 (임의로 날짜를 추측하거나 변경하지 말 것):
-   - 한국어: ${pfYear}년 ${pfMonth}월 기준
-   - English: As of ${monthEn} ${pfYear}
-   - 中文: 截至${pfYear}年${pfMonth}月
-   선택한 언어에 맞는 형식을 그대로 사용하세요.
-   문서 상단에는 제목, 이름(국영문), 날짜만 포함하고, 전화번호·이메일·주소 등 연락처 정보는 어떤 경우에도 본문에 포함하지 마세요 (연락처는 뒤에 첨부되는 이력서에만 표시됩니다).
+1. 문서 상단에는 제목과 이름(국영문)만 포함하고, 날짜나 '~월 기준' 같은 시점 표기는 절대 포함하지 마세요. 전화번호·이메일·주소 등 연락처 정보도 본문에 포함하지 마세요 (연락처는 뒤에 첨부되는 이력서에만 표시됩니다).
 
 2. ## 개요
    아래 경력 흐름과 핵심 메시지를 반영하여 3~4문장의 격조 있는 전문가 소개 문단으로 작성하세요.
