@@ -708,12 +708,16 @@ ${entriesSummary}
       },
       body:JSON.stringify({
         model:'claude-sonnet-4-6',
-        max_tokens:4000,
+        max_tokens:8000,
         messages:[{role:'user',content:prompt}]
       })
     });
     if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API 오류 '+res.status);}
     const data=await res.json();
+    if(data.stop_reason==='max_tokens'){
+      console.warn('[AI 보고서] stop_reason=max_tokens — 응답이 토큰 한도로 잘렸습니다.');
+      showToast('⚠ 보고서가 길어 일부 잘렸을 수 있습니다. 다시 생성해보세요.', true);
+    }
     let text=data.content.map(c=>c.text||'').join('');
     text=text.replace(/\s*\d{4}\s*년\s*\d{1,2}\s*월\s*기준/g,'')
              .replace(/\s*As of\s+\w+\s+\d{4}/gi,'')
