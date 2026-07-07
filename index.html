@@ -640,9 +640,9 @@ async function generatePortfolio() {
 관련링크: ${(e.links||[]).map(l=>l.label+': '+l.url).join(', ')||'없음'}
 `).join('\n---\n');
 
-  const langPrompt = lang==='korean'?'지금부터 작성하는 모든 내용은 반드시 한국어로만 작성하세요. 영어 문장이나 영문 버전을 절대 추가하지 마세요. 한국어 보고서 하나만 작성하세요. 회사명·제품명·기술 고유명사는 한국어 문장 안에서 그대로 사용 가능합니다. 격식 있는 한국어 비즈니스 문서체를 사용하세요.':
-                     lang==='english'?'Write in English only. Do not include any Korean or Chinese sections. Write a single English report only. Proper nouns such as company names, product names, and technical terms may appear as-is within English sentences. Use sophisticated, formal business English appropriate for executive-level headhunting submissions.':
-                     lang==='chinese'?'请务必只用中文撰写。不要附加任何韩文或英文版本。只撰写一份中文报告。公司名称、产品名称、专业术语等固有名词可在中文句子中直接使用。使用适合高端猎头和企业HR阅读的正式商务中文文书风格。':
+  const langPrompt = lang==='korean'?'지금부터 작성하는 모든 내용은 반드시 한국어로만 작성하세요. 영어 문장이나 영문 버전을 절대 추가하지 마세요. 한국어 보고서 하나만 작성하세요. 문서 제목은 반드시 "AI 융합 화학무역 전문가 포트폴리오" 만 사용하세요. 회사명·제품명·기술 고유명사는 한국어 문장 안에서 그대로 사용 가능합니다. 격식 있는 한국어 비즈니스 문서체를 사용하세요.':
+                     lang==='english'?'Write in English only. Do not include any Korean or Chinese sections. Write a single English report only. The document title must be exactly: "Chemical Trade & AI Integration — Professional Portfolio". Proper nouns such as company names, product names, and technical terms may appear as-is within English sentences. Use sophisticated, formal business English appropriate for executive-level headhunting submissions.':
+                     lang==='chinese'?'请务必只用中文撰写。不要附加任何韩文或英文版本。只撰写一份中文报告。文档标题必须使用："化工贸易与AI融合专家作品集"。公司名称、产品名称、专业术语等固有名词可在中文句子中直接使用。使用适合高端猎头和企业HR阅读的正式商务中文文书风格。':
                      '한국어 버전을 먼저 완성하고, 그 다음 English 버전을 작성하세요.';
 
   const prompt=`${langPrompt}
@@ -683,10 +683,6 @@ async function generatePortfolio() {
 ${entriesSummary}
 
 【보고서 작성 형식】
-문서 제목은 반드시 아래를 그대로 사용하세요 (임의로 변경 금지):
-한국어: AI 융합 화학무역 전문가 포트폴리오
-영어: Chemical Trade & AI Integration — Professional Portfolio
-중국어: 化工贸易与AI融合专家作品集
 문서 상단: 제목 + 이름(국영문)만. 날짜·연락처 절대 포함 금지.
 
 ## 개요
