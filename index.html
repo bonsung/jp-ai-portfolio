@@ -640,16 +640,18 @@ async function generatePortfolio() {
 관련링크: ${(e.links||[]).map(l=>l.label+': '+l.url).join(', ')||'없음'}
 `).join('\n---\n');
 
-  const langPrompt = lang==='korean'?'반드시 한국어로만 작성하세요. 격식 있는 한국어 비즈니스 문서체를 사용하세요.':
-                     lang==='english'?'Write in English only. Use sophisticated, formal business English appropriate for executive-level headhunting submissions. Do NOT translate Korean expressions directly — write naturally as a seasoned English-language business document.':
-                     lang==='chinese'?'请务必只用中文撰写。使用适合高端猎头和企业HR阅读的正式商务中文，避免直译腔，以地道的中文商业文书风格撰写。':
+  const langPrompt = lang==='korean'?'지금부터 작성하는 모든 문장은 반드시 한국어로만 작성하세요. 영어 문장을 한 줄도 포함하지 마세요. 회사명·제품명·기술 고유명사는 한국어 문장 안에서 그대로 사용 가능합니다. 격식 있는 한국어 비즈니스 문서체를 사용하세요.':
+                     lang==='english'?'Write every sentence in English only. Do not include any Korean or Chinese sentences. Proper nouns such as company names, product names, and technical terms may appear as-is within English sentences. Use sophisticated, formal business English appropriate for executive-level headhunting submissions. Do NOT translate Korean expressions directly — write naturally as a seasoned English-language business document.':
+                     lang==='chinese'?'所有内容必须只用中文撰写，不得出现任何韩文或英文句子。公司名称、产品名称、专业术语等固有名词可在中文句子中直接使用。使用适合高端猎头和企业HR阅读的正式商务中文，避免直译腔，以地道的中文商业文书风格撰写。':
                      '한국어 버전을 먼저 완성하고, 그 다음 English 버전을 작성하세요.';
 
-  const prompt=`당신은 헤드헌팅 전문 컨설턴트입니다. 아래 제공되는 경력 정보와 AI 활용 기록을
+  const prompt=`${langPrompt}
+※ 위 언어 지침은 이 문서 전체에 최우선으로 적용됩니다. 아래 경력 정보에 영문이 포함되어 있더라도, 출력 문서는 반드시 선택된 언어로만 작성하세요. 단, 회사명·제품명·기술 고유명사는 예외.
+
+당신은 헤드헌팅 전문 컨설턴트입니다. 아래 제공되는 경력 정보와 AI 활용 기록을
 종합하여, 한국 Remember·중국 猎头 등 헤드헌팅 플랫폼에 바로 제출 가능한 수준의
 공식 포트폴리오를 작성하세요.
 
-${langPrompt}
 ※ 영어·중국어 버전도 동일한 구조와 톤으로 작성하세요.
 
 【인물 핵심 포지셔닝】
