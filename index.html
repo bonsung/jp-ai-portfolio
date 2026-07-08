@@ -355,7 +355,8 @@ let entries = [];
 let editId = null;
 
 // ── PIN ──────────────────────────────────────────────────────
-const CORRECT_PIN = '0808';
+const EDGE_URL = 'https://jmjrhpijooswxkvxagwf.supabase.co/functions/v1/write-entry';
+let currentPin = null;
 let pinUnlocked = false;
 let pinCallback = null;
 
@@ -368,16 +369,11 @@ function requirePin(action, id=null) {
   setTimeout(() => document.getElementById('pinInput').focus(), 100);
 }
 function checkPin() {
-  const val = document.getElementById('pinInput').value;
-  if (val === CORRECT_PIN) {
-    pinUnlocked = true;
-    document.getElementById('pinOverlay').classList.remove('show');
-    if (pinCallback) { executePinAction(pinCallback.action, pinCallback.id); pinCallback = null; }
-  } else {
-    document.getElementById('pinError').textContent = '❌ PIN이 틀렸습니다.';
-    document.getElementById('pinInput').value = '';
-    document.getElementById('pinInput').focus();
-  }
+  const val = document.getElementById('pinInput').value.trim();
+  if (!val) { document.getElementById('pinError').textContent = '❌ PIN을 입력해주세요.'; return; }
+  currentPin = val;
+  document.getElementById('pinOverlay').classList.remove('show');
+  if (pinCallback) { executePinAction(pinCallback.action, pinCallback.id); pinCallback = null; }
 }
 function closePinModal() {
   document.getElementById('pinOverlay').classList.remove('show');
@@ -409,14 +405,38 @@ async function loadEntries() {
   return data || [];
 }
 async function upsertEntry(entry) {
-  const { error } = await sb.from('entries').upsert(entry, { onConflict: 'id' });
-  if (error) { showToast('저장 실패: ' + error.message, true); return false; }
-  return true;
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: currentPin, action: 'upsert', entry })
+    });
+    if (res.status === 401) {
+      pinUnlocked = false; currentPin = null;
+      showToast('❌ PIN이 틀렸습니다. 다시 시도해주세요.', true);
+      return false;
+    }
+    if (!res.ok) { const j = await res.json(); showToast('저장 실패: ' + (j.error || res.status), true); return false; }
+    pinUnlocked = true;
+    return true;
+  } catch(e) { showToast('저장 실패: ' + e.message, true); return false; }
 }
 async function deleteEntryFromDB(id) {
-  const { error } = await sb.from('entries').delete().eq('id', id);
-  if (error) { showToast('삭제 실패: ' + error.message, true); return false; }
-  return true;
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: currentPin, action: 'delete', id })
+    });
+    if (res.status === 401) {
+      pinUnlocked = false; currentPin = null;
+      showToast('❌ PIN이 틀렸습니다. 다시 시도해주세요.', true);
+      return false;
+    }
+    if (!res.ok) { const j = await res.json(); showToast('삭제 실패: ' + (j.error || res.status), true); return false; }
+    pinUnlocked = true;
+    return true;
+  } catch(e) { showToast('삭제 실패: ' + e.message, true); return false; }
 }
 async function initDB() {
   showLoading('연결 중...');
